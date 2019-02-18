@@ -167,7 +167,9 @@ public class Card {
         TEXT,
         CHARACTER,
         GRID_SQUARE,
-        VIDEO_GRID
+        VIDEO_GRID,
+        APP_GRID,
+        FUNCTION_GRID
 
     }
 

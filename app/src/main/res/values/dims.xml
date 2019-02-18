@@ -41,8 +41,8 @@
     <dimen name="character_image_card_width">120dp</dimen>
     <dimen name="character_image_card_height">120dp</dimen>
 
-    <dimen name="grid_card_width">300dp</dimen>
-    <dimen name="grid_card_height">200dp</dimen>
+    <dimen name="grid_card_width">250dp</dimen>
+    <dimen name="grid_card_height">100dp</dimen>
 
     <dimen name="playback_now_playing_card_width">240dp</dimen>
     <dimen name="playback_now_playing_card_height">240dp</dimen>

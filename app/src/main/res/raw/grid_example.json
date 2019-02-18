@@ -1,10 +1,10 @@
 {
   "cards": [
     {
-      "type": "GRID_SQUARE",
+      "type": "APP_GRID",
       "title": "Nüsse",
       "description": "$3.99/lb",
-      "localImageResource": "food_01"
+      "localImageResource": "http://e.hiphotos.baidu.com/zhidao/pic/item/5ab5c9ea15ce36d3418e754838f33a87e850b1c4.jpg"
     },
     {
       "type": "GRID_SQUARE",
