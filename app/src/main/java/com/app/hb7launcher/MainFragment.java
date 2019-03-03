@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainFragment extends VerticalGridFragment {
-    private static final int COLUMNS = 4;
+    private static final int COLUMNS = 3;
     private static final int ZOOM_FACTOR = FocusHighlight.ZOOM_FACTOR_MEDIUM;
     private Context mContext=getContext();
     private Drawable mDefaultCardImage;
@@ -56,15 +56,7 @@ public class MainFragment extends VerticalGridFragment {
         PresenterSelector cardPresenterSelector = new CardPresenterSelector(getActivity());
         mAdapter = new ArrayObjectAdapter(cardPresenterSelector);
         setAdapter(mAdapter);
-
-        prepareEntranceTransition();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                createRows();
-                startEntranceTransition();
-            }
-        }, 1000);
+        startEntranceTransition();
     }
     private void createSettings(){
         FunctionAppManage functionAppManage = new FunctionAppManage(getContext());
