@@ -12,8 +12,10 @@ import android.util.Log;
 import com.app.hb7launcher.model.AppModel;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 public class AppDataManage {
 
@@ -24,14 +26,21 @@ public class AppDataManage {
     }
 
     public ArrayList<AppModel> getLaunchAppList() {
+        List<ResolveInfo> localList=null;
         PackageManager localPackageManager = mContext.getPackageManager();
         Intent localIntent = new Intent("android.intent.action.MAIN");
-        //localIntent.addCategory("android.intent.category.LAUNCHER");
+
         localIntent.addCategory("android.intent.category.LEANBACK_LAUNCHER");
-        List<ResolveInfo> localList = localPackageManager.queryIntentActivities(localIntent,0);
-        ArrayList<AppModel> localArrayList = null;
+        localIntent.addCategory("android.intent.category.LAUNCHER");
+        localIntent.setFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK|
+                        Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
+        );
+         localList = localPackageManager.queryIntentActivities(localIntent,0);
+        Set<ResolveInfo> foo = new HashSet<>(localList);
+
         Iterator<ResolveInfo> localIterator = null;
-        localArrayList = new ArrayList<>();
+        ArrayList<AppModel> localArrayList = new ArrayList<>();
         if (localList.size() != 0) {
             localIterator = localList.iterator();
         }
@@ -39,8 +48,9 @@ public class AppDataManage {
             if (!localIterator.hasNext())
                 break;
             ResolveInfo localResolveInfo = (ResolveInfo) localIterator.next();
+
             AppModel localAppBean = new AppModel();
-            localAppBean.setIcon(localResolveInfo.activityInfo.loadBanner(localPackageManager));
+            localAppBean.setIcon(localResolveInfo.activityInfo.loadBanner(localPackageManager)==null?localResolveInfo.activityInfo.loadIcon(localPackageManager):localResolveInfo.activityInfo.loadBanner(localPackageManager));
             localAppBean.setName(localResolveInfo.activityInfo.loadLabel(localPackageManager).toString());
             localAppBean.setPackageName(localResolveInfo.activityInfo.packageName);
             localAppBean.setDataDir(localResolveInfo.activityInfo.applicationInfo.publicSourceDir);

@@ -1,6 +1,7 @@
 package com.app.hb7launcher.cards.presenters;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.support.v17.leanback.widget.ImageCardView;
 import android.support.v17.leanback.widget.Presenter;
@@ -20,8 +21,6 @@ import com.app.hb7launcher.model.AppModel;
 public class AppCardPresenter extends Presenter {
 
     private Context mContext;
-    private int CARD_WIDTH = 313;
-    private int CARD_HEIGHT = 176;
     private Drawable mDefaultCardImage;
 
     @Override
@@ -46,7 +45,11 @@ public class AppCardPresenter extends Presenter {
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, Object item) {
         ImageCardView cardView = (ImageCardView) viewHolder.view;
-        cardView.setMainImageDimensions(CARD_WIDTH,CARD_HEIGHT);
+        Resources resources = cardView.getContext().getResources();
+        int cardWidth = Math.round(resources.getDimensionPixelSize(R.dimen.card_width)
+        );
+        int cardHeight = resources.getDimensionPixelSize(R.dimen.card_height);
+        cardView.setMainImageDimensions(cardWidth,cardHeight);
         AppModel appBean = (AppModel) item;
         cardView.setMainImageScaleType(ImageView.ScaleType.CENTER_INSIDE);
         cardView.getMainImageView().setImageDrawable(appBean.getIcon());

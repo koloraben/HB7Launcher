@@ -3,6 +3,7 @@ package com.app.hb7launcher;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -36,7 +37,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainFragment extends VerticalGridFragment {
-    private static final int COLUMNS = 3;
+    private static final int COLUMNS = 4;
     private static final int ZOOM_FACTOR = FocusHighlight.ZOOM_FACTOR_MEDIUM;
     private Context mContext=getContext();
     private Drawable mDefaultCardImage;
@@ -56,6 +57,8 @@ public class MainFragment extends VerticalGridFragment {
         PresenterSelector cardPresenterSelector = new CardPresenterSelector(getActivity());
         mAdapter = new ArrayObjectAdapter(cardPresenterSelector);
         setAdapter(mAdapter);
+        prepareEntranceTransition();
+        createRows();
         startEntranceTransition();
     }
     private void createSettings(){
@@ -89,6 +92,11 @@ public class MainFragment extends VerticalGridFragment {
                         appBean.getPackageName());
                 if (launchIntent != null) {
                     getActivity().startActivity(launchIntent);
+                }else{
+                     launchIntent = getActivity().getPackageManager().getLaunchIntentForPackage(
+                            appBean.getPackageName());
+                    getActivity().startActivity(launchIntent);
+
                 }
              }
              if (item instanceof FunctionModel){
@@ -106,12 +114,9 @@ public class MainFragment extends VerticalGridFragment {
 
                          startActivity(i);
                      }
-                     else if(((FunctionModel) item).getIntent()!=null){
-                             FunctionModel functionModel = (FunctionModel) item;
-                             Intent intent = functionModel.getIntent();
-                             if (intent != null) {
-                                 startActivity(intent);
-                         }
+                     else {
+                        Intent intent = getContext().getPackageManager().getLaunchIntentForPackage("com.android.tv.settings");
+                        startActivity(intent);
                      }
 
 
