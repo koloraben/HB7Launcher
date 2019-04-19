@@ -30,7 +30,7 @@ public class FunctionAppManage {
         settings.setIcon(R.drawable.ic_settings_settings);
         settings.setClassName("com.android.tv.settings.Settings");
         settings.setPck("com.android.tv.settings");
-        functionModels.add(settings);
+        //functionModels.add(settings);
 
         return functionModels;
     }

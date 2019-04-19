@@ -67,21 +67,4 @@ public class FunctionModel {
         mIntent = intent;
     }
 
-    public static List<FunctionModel> getFunctionList(Context context) {
-        List<FunctionModel> functionModels = new ArrayList<>();
-
-        FunctionModel networkSettings = new FunctionModel();
-        networkSettings.setName("Connectivité");
-        networkSettings.setIcon(R.drawable.ic_settings_ethernet_active);
-        networkSettings.setClassName("com.android.tv.settings.connectivity.NetworkActivity");
-        networkSettings.setPck("com.android.tv.settings");
-        FunctionModel settings = new FunctionModel();
-        settings.setName("Settings");
-        settings.setIcon(R.drawable.ic_settings_settings);
-        settings.setClassName("com.android.tv.settings.Settings");
-        settings.setPck("com.android.tv.settings");
-        functionModels.add(settings);
-
-        return functionModels;
-    }
 }

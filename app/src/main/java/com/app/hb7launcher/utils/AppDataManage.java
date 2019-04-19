@@ -26,17 +26,46 @@ public class AppDataManage {
     }
 
     public ArrayList<AppModel> getLaunchAppList() {
+        ArrayList<AppModel> listAppLeanback= getLeanbackLaunchAppList();
+        ArrayList<AppModel> listApp= getLauncherAppList();
+        ArrayList<AppModel> mergedApp= (ArrayList<AppModel>) listAppLeanback.clone();
+
+        Set<String> uniquApps=new HashSet<>();
+
+        for(AppModel app : listAppLeanback){
+            uniquApps.add(app.getPackageName());
+        }
+
+        for(AppModel app : listApp){
+            if(!uniquApps.contains(app.getPackageName()) ){
+                mergedApp.add(app);
+                uniquApps.add(app.getPackageName());
+            }
+        }
+        AppModel hb7App = null;
+        for (AppModel app : mergedApp){
+            if (app.getPackageName().equals("com.app.hb7live")){
+                hb7App = app;
+                //mergedApp.remove(app);
+                break;
+            }
+        }
+        mergedApp.remove(hb7App);
+        mergedApp.set(0,hb7App);
+
+        return mergedApp;
+    }
+
+    public ArrayList<AppModel> getLeanbackLaunchAppList() {
         List<ResolveInfo> localList=null;
         PackageManager localPackageManager = mContext.getPackageManager();
         Intent localIntent = new Intent("android.intent.action.MAIN");
-
-        localIntent.addCategory("android.intent.category.LEANBACK_LAUNCHER");
         localIntent.addCategory("android.intent.category.LAUNCHER");
         localIntent.setFlags(
                 Intent.FLAG_ACTIVITY_NEW_TASK|
                         Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
         );
-         localList = localPackageManager.queryIntentActivities(localIntent,0);
+        localList = localPackageManager.queryIntentActivities(localIntent,0);
         Set<ResolveInfo> foo = new HashSet<>(localList);
 
         Iterator<ResolveInfo> localIterator = null;
@@ -44,104 +73,89 @@ public class AppDataManage {
         if (localList.size() != 0) {
             localIterator = localList.iterator();
         }
-        while (true) {
-            if (!localIterator.hasNext())
-                break;
+        while (localIterator.hasNext()) {
             ResolveInfo localResolveInfo = (ResolveInfo) localIterator.next();
-
-            AppModel localAppBean = new AppModel();
-            localAppBean.setIcon(localResolveInfo.activityInfo.loadBanner(localPackageManager)==null?localResolveInfo.activityInfo.loadIcon(localPackageManager):localResolveInfo.activityInfo.loadBanner(localPackageManager));
-            localAppBean.setName(localResolveInfo.activityInfo.loadLabel(localPackageManager).toString());
-            localAppBean.setPackageName(localResolveInfo.activityInfo.packageName);
-            localAppBean.setDataDir(localResolveInfo.activityInfo.applicationInfo.publicSourceDir);
-            localAppBean.setLauncherName(localResolveInfo.activityInfo.name);
-            String pkgName = localResolveInfo.activityInfo.packageName;
-            PackageInfo mPackageInfo;
-            try {
-                mPackageInfo = mContext.getPackageManager().getPackageInfo(pkgName, 0);
-                if ((mPackageInfo.applicationInfo.flags & mPackageInfo.applicationInfo.FLAG_SYSTEM) > 0) {// 系统预装
-                    localAppBean.setSysApp(true);
+            if (getListPackage().contains(localResolveInfo.activityInfo.packageName)){
+                AppModel localAppBean = new AppModel();
+                localAppBean.setIcon(localResolveInfo.activityInfo.loadBanner(localPackageManager) == null ? localResolveInfo.activityInfo.loadIcon(localPackageManager) : localResolveInfo.activityInfo.loadBanner(localPackageManager));
+                localAppBean.setName(localResolveInfo.activityInfo.loadLabel(localPackageManager).toString());
+                localAppBean.setPackageName(localResolveInfo.activityInfo.packageName);
+                localAppBean.setDataDir(localResolveInfo.activityInfo.applicationInfo.publicSourceDir);
+                localAppBean.setLauncherName(localResolveInfo.activityInfo.name);
+                String pkgName = localResolveInfo.activityInfo.packageName;
+                PackageInfo mPackageInfo;
+                try {
+                    mPackageInfo = mContext.getPackageManager().getPackageInfo(pkgName, 0);
+                    if ((mPackageInfo.applicationInfo.flags & mPackageInfo.applicationInfo.FLAG_SYSTEM) > 0) {
+                        localAppBean.setSysApp(true);
+                    }
+                } catch (NameNotFoundException e) {
+                    e.printStackTrace();
                 }
-            } catch (NameNotFoundException e) {
-                e.printStackTrace();
-            }
-            if (!localAppBean.getPackageName().equals(mContext.getPackageName())) {
-                localArrayList.add(localAppBean);
+                if (!localAppBean.getPackageName().equals(mContext.getPackageName())) {
+                    localArrayList.add(localAppBean);
+                }
             }
         }
         Log.e("Applications size",localArrayList.size()+"");
         return localArrayList;
     }
 
-    public ArrayList<AppModel> getUninstallAppList() {
+    public ArrayList<AppModel> getLauncherAppList() {
+        List<ResolveInfo> localList=null;
         PackageManager localPackageManager = mContext.getPackageManager();
         Intent localIntent = new Intent("android.intent.action.MAIN");
-        localIntent.addCategory("android.intent.category.LAUNCHER");
-        List<ResolveInfo> localList = localPackageManager.queryIntentActivities(localIntent, 0);
-        ArrayList<AppModel> localArrayList = null;
+        localIntent.addCategory("android.intent.category.LEANBACK_LAUNCHER");
+        localIntent.setFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK|
+                        Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
+        );
+        localList = localPackageManager.queryIntentActivities(localIntent,0);
+        Set<ResolveInfo> foo = new HashSet<>(localList);
+
         Iterator<ResolveInfo> localIterator = null;
-        if (localList != null) {
-            localArrayList = new ArrayList<>();
+        ArrayList<AppModel> localArrayList = new ArrayList<>();
+        if (localList.size() != 0) {
             localIterator = localList.iterator();
         }
-        while (true) {
-            if (!localIterator.hasNext())
-                break;
+        while (localIterator.hasNext()) {
             ResolveInfo localResolveInfo = (ResolveInfo) localIterator.next();
-            AppModel localAppBean = new AppModel();
-            localAppBean.setIcon(localResolveInfo.activityInfo.loadIcon(localPackageManager));
-            localAppBean.setName(localResolveInfo.activityInfo.loadLabel(localPackageManager).toString());
-            localAppBean.setPackageName(localResolveInfo.activityInfo.packageName);
-            localAppBean.setDataDir(localResolveInfo.activityInfo.applicationInfo.publicSourceDir);
-            String pkgName = localResolveInfo.activityInfo.packageName;
-            PackageInfo mPackageInfo;
-            try {
-                mPackageInfo = mContext.getPackageManager().getPackageInfo(pkgName, 0);
-                if ((mPackageInfo.applicationInfo.flags & mPackageInfo.applicationInfo.FLAG_SYSTEM) > 0) {// 系统预装
-                    localAppBean.setSysApp(true);
-                } else {
+            if (getListPackage().contains(localResolveInfo.activityInfo.packageName)){
+                AppModel localAppBean = new AppModel();
+                localAppBean.setIcon(localResolveInfo.activityInfo.loadBanner(localPackageManager) == null ? localResolveInfo.activityInfo.loadIcon(localPackageManager) : localResolveInfo.activityInfo.loadBanner(localPackageManager));
+                localAppBean.setName(localResolveInfo.activityInfo.loadLabel(localPackageManager).toString());
+                localAppBean.setPackageName(localResolveInfo.activityInfo.packageName);
+                localAppBean.setDataDir(localResolveInfo.activityInfo.applicationInfo.publicSourceDir);
+                localAppBean.setLauncherName(localResolveInfo.activityInfo.name);
+                String pkgName = localResolveInfo.activityInfo.packageName;
+                PackageInfo mPackageInfo;
+                try {
+                    mPackageInfo = mContext.getPackageManager().getPackageInfo(pkgName, 0);
+                    if ((mPackageInfo.applicationInfo.flags & mPackageInfo.applicationInfo.FLAG_SYSTEM) > 0) {
+                        localAppBean.setSysApp(true);
+                    }
+                } catch (NameNotFoundException e) {
+                    e.printStackTrace();
+                }
+                if (!localAppBean.getPackageName().equals(mContext.getPackageName())) {
                     localArrayList.add(localAppBean);
                 }
-            } catch (NameNotFoundException e) {
-                e.printStackTrace();
             }
         }
+        Log.e("Applications size",localArrayList.size()+"");
         return localArrayList;
     }
 
-    public ArrayList<AppModel> getAutoRunAppList() {
-        PackageManager localPackageManager = mContext.getPackageManager();
-        Intent localIntent = new Intent("android.intent.action.MAIN");
-        localIntent.addCategory("android.intent.category.LAUNCHER");
-        List<ResolveInfo> localList = localPackageManager.queryIntentActivities(localIntent, 0);
-        ArrayList<AppModel> localArrayList = null;
-        Iterator<ResolveInfo> localIterator = null;
-        if (localList != null) {
-            localArrayList = new ArrayList<>();
-            localIterator = localList.iterator();
-        }
-
-        while (true) {
-            if (!localIterator.hasNext())
-                break;
-            ResolveInfo localResolveInfo = localIterator.next();
-            AppModel localAppBean = new AppModel();
-            localAppBean.setIcon(localResolveInfo.activityInfo.loadIcon(localPackageManager));
-            localAppBean.setName(localResolveInfo.activityInfo.loadLabel(localPackageManager).toString());
-            localAppBean.setPackageName(localResolveInfo.activityInfo.packageName);
-            localAppBean.setDataDir(localResolveInfo.activityInfo.applicationInfo.publicSourceDir);
-            String pkgName = localResolveInfo.activityInfo.packageName;
-            String permission = "android.permission.RECEIVE_BOOT_COMPLETED";
-            try {
-                PackageInfo mPackageInfo = mContext.getPackageManager().getPackageInfo(pkgName, 0);
-                if ((PackageManager.PERMISSION_GRANTED == localPackageManager.checkPermission(permission, pkgName))
-                        && !((mPackageInfo.applicationInfo.flags & mPackageInfo.applicationInfo.FLAG_SYSTEM) > 0)) {
-                    localArrayList.add(localAppBean);
-                }
-            } catch (NameNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-        return localArrayList;
+    private ArrayList<String> getListPackage(){
+        ArrayList<String> listPackage = new ArrayList<>();
+        listPackage.add("com.canal.android.canal");
+        listPackage.add("com.sfr.android.sfrsport");
+        listPackage.add("com.app.hb7live");
+        listPackage.add("com.netflix.mediaclient");
+        //listPackage.add("com.droidlogic.FileBrower");
+        listPackage.add("com.android.music");
+        listPackage.add("com.droidlogic.videoplayer");
+        listPackage.add("");
+        return listPackage;
     }
 }

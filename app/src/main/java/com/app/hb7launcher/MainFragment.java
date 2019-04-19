@@ -46,7 +46,7 @@ public class MainFragment extends VerticalGridFragment {
         super.onCreate(savedInstanceState);
         //setTitle(getString(R.string.app_name));
         setupRowAdapter();
-        setBadgeDrawable(getResources().getDrawable(R.drawable.thumbnail_example_grid));
+        //setBadgeDrawable(getResources().getDrawable(R.drawable.thumbnail_example_grid));
         setupEventListeners();
     }
     private void setupRowAdapter() {
