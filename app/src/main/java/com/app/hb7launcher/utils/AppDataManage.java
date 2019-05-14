@@ -3,6 +3,7 @@ package com.app.hb7launcher.utils;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -10,7 +11,10 @@ import android.content.pm.ResolveInfo;
 import android.util.Log;
 
 import com.app.hb7launcher.model.AppModel;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -20,9 +24,12 @@ import java.util.Set;
 public class AppDataManage {
 
     private final Context mContext;
-
+    private static final String SharedlistPackage = "SharedlistPackage";
+    private static final String listPackage = "listPackage";
+    ArrayList<String> arraylistPackage = null;
     public AppDataManage(Context context) {
         mContext = context;
+        getListPackage();
     }
 
     public ArrayList<AppModel> getLaunchAppList() {
@@ -44,14 +51,21 @@ public class AppDataManage {
         }
         AppModel hb7App = null;
         for (AppModel app : mergedApp){
+
+            if (app.getPackageName().equals("com.droidlogic.FileBrower")){
+                app.setName("Fichiers");
+            }
             if (app.getPackageName().equals("com.app.hb7live")){
                 hb7App = app;
                 //mergedApp.remove(app);
                 break;
             }
         }
-        mergedApp.remove(hb7App);
-        mergedApp.set(0,hb7App);
+        if(hb7App!=null){
+            mergedApp.remove(hb7App);
+            mergedApp.set(0,hb7App);
+        }
+
 
         return mergedApp;
     }
@@ -147,15 +161,43 @@ public class AppDataManage {
     }
 
     private ArrayList<String> getListPackage(){
-        ArrayList<String> listPackage = new ArrayList<>();
-        listPackage.add("com.canal.android.canal");
-        listPackage.add("com.sfr.android.sfrsport");
-        listPackage.add("com.app.hb7live");
-        listPackage.add("com.netflix.mediaclient");
-        //listPackage.add("com.droidlogic.FileBrower");
-        listPackage.add("com.android.music");
-        listPackage.add("com.droidlogic.videoplayer");
-        listPackage.add("");
-        return listPackage;
+        SharedPreferences sharedPreferences = mContext.getSharedPreferences(SharedlistPackage,Context.MODE_PRIVATE);
+        Gson gson = new Gson();
+        String json = sharedPreferences.getString(listPackage,null);
+        Type type = new TypeToken<ArrayList<String>>(){}.getType();
+        arraylistPackage = gson.fromJson(json,type);
+        if (arraylistPackage == null){
+            arraylistPackage = new ArrayList<>();
+            arraylistPackage.add("com.canal.android.canal");
+            arraylistPackage.add("com.sfr.android.sfrsport");
+            arraylistPackage.add("com.app.hb7live");
+            arraylistPackage.add("com.netflix.mediaclient");
+            arraylistPackage.add("com.droidlogic.FileBrower");
+            arraylistPackage.add("com.android.music");
+            arraylistPackage.add("com.droidlogic.videoplayer");
+            arraylistPackage.add("com.amazon.avod.thirdpartyclient");
+            arraylistPackage.add("com.appmind.radios.fr");
+            arraylistPackage.add("com.chanel.weather.forecast.accu");
+            arraylistPackage.add("com.orange.ocsgo");
+            arraylistPackage.add("net.aietec.epg");
+            arraylistPackage.add("com.instagram.android");
+            arraylistPackage.add("com.beinsports.andcontent");
+            saveListPackage();
+        }
+
+        return arraylistPackage;
+    }
+    public void saveListPackage(){
+        SharedPreferences sharedPreferences = mContext.getSharedPreferences(SharedlistPackage,Context.MODE_PRIVATE);
+        SharedPreferences.Editor listEditor = sharedPreferences.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(arraylistPackage);
+        listEditor.putString(listPackage,json);
+        listEditor.apply();
+
+    }
+
+    public ArrayList<String> getArraylistPackage() {
+        return arraylistPackage;
     }
 }
