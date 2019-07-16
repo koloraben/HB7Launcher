@@ -3,6 +3,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+    <ImageView
+        android:id="@+id/logohb7"
+        android:layout_width="243dp"
+        android:layout_height="49dp"
+        android:layout_gravity="center_vertical|start"
+        android:layout_marginTop="8dp"
+        android:paddingStart="0dp"
+        android:src="@drawable/logohb7"
+        android:transitionGroup="true" />
 
     <AnalogClock
             android:id="@+id/clock"

@@ -20,6 +20,7 @@ import android.support.v17.leanback.widget.TitleViewAdapter;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -32,6 +33,7 @@ import com.app.hb7launcher.R;
 public class CustomTitleView extends RelativeLayout implements TitleViewAdapter.Provider {
     private final TextView mTitleView;
     private final View mAnalogClockView;
+    private final ImageView imageView;
     //private final View mSearchOrbView=null;
 
     private final TitleViewAdapter mTitleViewAdapter = new TitleViewAdapter() {
@@ -57,13 +59,13 @@ public class CustomTitleView extends RelativeLayout implements TitleViewAdapter.
 
         @Override
         public void updateComponentsVisibility(int flags) {
-            /*if ((flags & BRANDING_VIEW_VISIBLE) == BRANDING_VIEW_VISIBLE) {
+            if ((flags & BRANDING_VIEW_VISIBLE) == BRANDING_VIEW_VISIBLE) {
                 updateBadgeVisibility(true);
             } else {
                 mAnalogClockView.setVisibility(View.GONE);
-                mTitleView.setVisibility(View.GONE);
+                imageView.setVisibility(View.GONE);
             }
-
+            /*
             int visibility = (flags & SEARCH_VIEW_VISIBLE) == SEARCH_VIEW_VISIBLE
                     ? View.VISIBLE : View.INVISIBLE;
             mSearchOrbView.setVisibility(visibility);*/
@@ -72,10 +74,10 @@ public class CustomTitleView extends RelativeLayout implements TitleViewAdapter.
         private void updateBadgeVisibility(boolean visible) {
             if (visible) {
                 mAnalogClockView.setVisibility(View.VISIBLE);
-                mTitleView.setVisibility(View.VISIBLE);
+                imageView.setVisibility(View.VISIBLE);
             } else {
                 mAnalogClockView.setVisibility(View.GONE);
-                mTitleView.setVisibility(View.GONE);
+                imageView.setVisibility(View.GONE);
             }
         }
     };
@@ -93,7 +95,7 @@ public class CustomTitleView extends RelativeLayout implements TitleViewAdapter.
         View root  = LayoutInflater.from(context).inflate(R.layout.custom_titleview, this);
         mTitleView = (TextView) root.findViewById(R.id.title_tv);
         mAnalogClockView = root.findViewById(R.id.clock);
-        //mSearchOrbView = root.findViewById(R.id.search_orb);
+        imageView = root.findViewById(R.id.logohb7);
     }
 
     public void setTitle(CharSequence title) {
@@ -111,6 +113,8 @@ public class CustomTitleView extends RelativeLayout implements TitleViewAdapter.
             mAnalogClockView.setVisibility(View.VISIBLE);
         }
     }
+
+
 
     @Override
     public TitleViewAdapter getTitleViewAdapter() {

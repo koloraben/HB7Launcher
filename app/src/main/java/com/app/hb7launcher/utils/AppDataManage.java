@@ -54,16 +54,21 @@ public class AppDataManage {
 
             if (app.getPackageName().equals("com.droidlogic.FileBrower")){
                 app.setName("Fichiers");
+                app.setLauncherName("Fichiers");
             }
             if (app.getPackageName().equals("com.app.hb7live")){
                 hb7App = app;
                 //mergedApp.remove(app);
-                break;
             }
         }
         if(hb7App!=null){
             mergedApp.remove(hb7App);
-            mergedApp.set(0,hb7App);
+            if(mergedApp.size()==0){
+                mergedApp.add(hb7App);
+                Log.e("IFFFF","mergedApp.size()==0");
+
+            }else {mergedApp.set(0,hb7App);
+                Log.e("ELSE","else");}
         }
 
 
@@ -169,19 +174,24 @@ public class AppDataManage {
         if (arraylistPackage == null){
             arraylistPackage = new ArrayList<>();
             arraylistPackage.add("com.canal.android.canal");
+            arraylistPackage.add("com.android.vending");
             arraylistPackage.add("com.sfr.android.sfrsport");
             arraylistPackage.add("com.app.hb7live");
-            arraylistPackage.add("com.netflix.mediaclient");
             arraylistPackage.add("com.droidlogic.FileBrower");
-            arraylistPackage.add("com.android.music");
             arraylistPackage.add("com.droidlogic.videoplayer");
             arraylistPackage.add("com.amazon.avod.thirdpartyclient");
-            arraylistPackage.add("com.appmind.radios.fr");
-            arraylistPackage.add("com.chanel.weather.forecast.accu");
+            arraylistPackage.add("com.beinsports.andcontent");
             arraylistPackage.add("com.orange.ocsgo");
             arraylistPackage.add("net.aietec.epg");
             arraylistPackage.add("com.instagram.android");
-            arraylistPackage.add("com.beinsports.andcontent");
+            arraylistPackage.add("io.makeroid.sarl_alzeto.radio");
+            arraylistPackage.add("com.facebook.katana");
+            arraylistPackage.add("com.skype.raider");
+            arraylistPackage.add("com.twitter.android");
+            arraylistPackage.add("com.google.android.youtube.tv");
+            arraylistPackage.add("com.netflix.mediaclient");
+            arraylistPackage.add("com.android.musicfx");
+            arraylistPackage.add("fr.meteo");
             saveListPackage();
         }
 

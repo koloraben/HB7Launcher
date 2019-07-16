@@ -40,13 +40,12 @@ public class MainFragment extends VerticalGridFragment {
     private static final int COLUMNS = 4;
     private static final int ZOOM_FACTOR = FocusHighlight.ZOOM_FACTOR_MEDIUM;
     private Context mContext=getContext();
+    private static final String TAG = "MainFragmentLauncherHB7";
     private Drawable mDefaultCardImage;
     private ArrayObjectAdapter mAdapter;
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setTitle(getString(R.string.app_name));
         setupRowAdapter();
-        //setBadgeDrawable(getResources().getDrawable(R.drawable.thumbnail_example_grid));
         setupEventListeners();
     }
     private void setupRowAdapter() {
@@ -68,9 +67,6 @@ public class MainFragment extends VerticalGridFragment {
         mAdapter.addAll(mAdapter.size(),functionModels);
     };
     private void createRows() {
-        //String json = Utils.inputStreamToString(getResources()
-          //      .openRawResource(R.raw.grid_example));
-        //CardRow row = new Gson().fromJson(json, CardRow.class);
         ArrayList<AppModel> appDataList = new AppDataManage(getContext()).getLaunchAppList();
         mAdapter.addAll(0,  appDataList);
         createSettings();

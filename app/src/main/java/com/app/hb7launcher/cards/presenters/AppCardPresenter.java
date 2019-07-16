@@ -37,6 +37,7 @@ public class AppCardPresenter extends Presenter {
                 super.setSelected(selected);
             }
         };
+        cardView.setBackgroundColor(mContext.getResources().getColor(R.color.transparent ));
         cardView.setFocusable(true);
         cardView.setFocusableInTouchMode(true);
         return new ViewHolder(cardView);

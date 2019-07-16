@@ -37,7 +37,7 @@
         android:paddingLeft="11dp"
         android:paddingRight="11dp"
         android:paddingTop="7dp"
-        android:background="@color/default_card_footer_background_color">
+        android:background="@color/transparent">
 
         <TextView
             android:id="@+id/primary_text"

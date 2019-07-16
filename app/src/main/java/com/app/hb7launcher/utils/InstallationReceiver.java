@@ -6,6 +6,9 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.app.hb7launcher.MainActivity;
+import com.app.hb7launcher.MainFragment;
+
 public class InstallationReceiver extends BroadcastReceiver {
 
     Context context;
@@ -16,19 +19,21 @@ public class InstallationReceiver extends BroadcastReceiver {
         this.context = context;
 
         // when package removed
-        if (intent.getAction().equals("android.intent.action.PACKAGE_REMOVED")) {
+        if (intent.getAction().equals("android.intent.action.PACKAGE_ADDED")) {
 
             AppDataManage appDataManage = new AppDataManage(context);
-            appDataManage.getArraylistPackage().add(intent.getData().getSchemeSpecificPart());
-            appDataManage.saveListPackage();
-            Log.e(" BroadcastReceiver ", "InstallationReceiver onReceive called "
-                    + " PACKAGE_REMOVED ");
-            Toast.makeText(context, "Application intallée, Merci de Redémarrer",
+                if(!appDataManage.getArraylistPackage().contains(intent.getData().getSchemeSpecificPart())){
+                    appDataManage.getArraylistPackage().add(intent.getData().getSchemeSpecificPart());
+                    appDataManage.saveListPackage();
+                    Log.e(" BroadcastReceiver ", "InstallationReceiver onReceive called "
+                            + " PACKAGE_ADDED ");
+                }
+                Toast.makeText(context, "Application intallée, Merci de Redémarrer",
                     Toast.LENGTH_LONG).show();
         }
         // when package installed
         else if (intent.getAction().equals(
-                "android.intent.action.PACKAGE_ADDED")) {
+                "android.intent.action.PACKAGE_REMOVED")) {
             AppDataManage appDataManage = new AppDataManage(context);
             boolean isRemoved = appDataManage.getArraylistPackage().remove(intent.getData().getSchemeSpecificPart());
             if (isRemoved)appDataManage.saveListPackage();
@@ -37,5 +42,7 @@ public class InstallationReceiver extends BroadcastReceiver {
                     Toast.LENGTH_LONG).show();
 
         }
+        Intent intent1 = new Intent(context, MainActivity.class);
+        context.startActivity(intent1);
     }
 }
