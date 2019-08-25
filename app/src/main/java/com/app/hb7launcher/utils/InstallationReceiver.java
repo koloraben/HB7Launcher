@@ -6,8 +6,7 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.app.hb7launcher.MainActivity;
-import com.app.hb7launcher.MainFragment;
+import com.jakewharton.processphoenix.ProcessPhoenix;
 
 public class InstallationReceiver extends BroadcastReceiver {
 
@@ -22,27 +21,30 @@ public class InstallationReceiver extends BroadcastReceiver {
         if (intent.getAction().equals("android.intent.action.PACKAGE_ADDED")) {
 
             AppDataManage appDataManage = new AppDataManage(context);
-                if(!appDataManage.getArraylistPackage().contains(intent.getData().getSchemeSpecificPart())){
-                    appDataManage.getArraylistPackage().add(intent.getData().getSchemeSpecificPart());
-                    appDataManage.saveListPackage();
-                    Log.e(" BroadcastReceiver ", "InstallationReceiver onReceive called "
-                            + " PACKAGE_ADDED ");
-                }
-                Toast.makeText(context, "Application intallée, Merci de Redémarrer",
+            if (!appDataManage.getArraylistPackage().contains(intent.getData().getSchemeSpecificPart())) {
+                appDataManage.getArraylistPackage().add(intent.getData().getSchemeSpecificPart());
+                appDataManage.saveListPackage();
+                Log.e(" BroadcastReceiver ", "InstallationReceiver onReceive called "
+                        + " PACKAGE_ADDED ");
+            }
+            Toast.makeText(context, "Application intallée: " + intent.getData().getSchemeSpecificPart(),
                     Toast.LENGTH_LONG).show();
+
+
         }
         // when package installed
         else if (intent.getAction().equals(
                 "android.intent.action.PACKAGE_REMOVED")) {
             AppDataManage appDataManage = new AppDataManage(context);
             boolean isRemoved = appDataManage.getArraylistPackage().remove(intent.getData().getSchemeSpecificPart());
-            if (isRemoved)appDataManage.saveListPackage();
-            Log.e(" BroadcastReceiver ", " InstallationReceiver onReceive called " + "PACKAGE_ADDED :" + intent.getData().getSchemeSpecificPart());
-            Toast.makeText(context, "Application Supprimé, Merci de Redémarrer",
+            if (isRemoved) appDataManage.saveListPackage();
+            Log.e(" BroadcastReceiver ", " InstallationReceiver onReceive called " + "PACKAGE_REMOVED :" + intent.getData().getSchemeSpecificPart());
+            Toast.makeText(context, "Application Supprimé: "+intent.getData().getSchemeSpecificPart(),
                     Toast.LENGTH_LONG).show();
 
         }
-        Intent intent1 = new Intent(context, MainActivity.class);
-        context.startActivity(intent1);
+        // TODO: 8/9/2019
+        ProcessPhoenix.triggerRebirth(context);
+
     }
 }

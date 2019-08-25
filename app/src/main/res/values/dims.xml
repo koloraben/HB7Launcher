@@ -41,6 +41,8 @@
     <dimen name="character_image_card_width">120dp</dimen>
     <dimen name="character_image_card_height">120dp</dimen>
 
+    <dimen name="activity_horizontal_margin">30dp</dimen>
+
     <dimen name="grid_card_width">250dp</dimen>
     <dimen name="grid_card_height">100dp</dimen>
 
