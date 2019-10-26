@@ -174,13 +174,13 @@ public class AppDataManage {
         if (arraylistPackage == null){
             arraylistPackage = new ArrayList<>();
             arraylistPackage.add("com.canal.android.canal");
-            arraylistPackage.add("com.android.vending");
+            arraylistPackage.add("ptv.bein.ui");
             arraylistPackage.add("com.sfr.android.sfrsport");
             arraylistPackage.add("com.app.hb7live");
             arraylistPackage.add("com.droidlogic.FileBrower");
             arraylistPackage.add("com.droidlogic.videoplayer");
-            arraylistPackage.add("com.amazon.avod.thirdpartyclient");
-            arraylistPackage.add("com.beinsports.andcontent");
+            arraylistPackage.add("com.amazon.amazonvideo.livingroom");
+            //arraylistPackage.add("com.beinsports.andcontent");
             arraylistPackage.add("com.orange.ocsgo");
             arraylistPackage.add("net.aietec.epg");
             arraylistPackage.add("com.instagram.android");
