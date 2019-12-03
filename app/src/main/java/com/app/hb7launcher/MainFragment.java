@@ -30,8 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainFragment extends VerticalGridFragment {
-    private static final int COLUMNS = 4;
-    private static final int ZOOM_FACTOR = FocusHighlight.ZOOM_FACTOR_MEDIUM;
+    private static final int COLUMNS = 7;
+    private static final int ZOOM_FACTOR = FocusHighlight.ZOOM_FACTOR_LARGE;
     private Context mContext=getContext();
     private static final String TAG = "MainFragmentLauncherHB7";
     BroadcastReceiver mServiceReceiver;

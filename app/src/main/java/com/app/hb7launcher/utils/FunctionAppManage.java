@@ -24,13 +24,20 @@ public class FunctionAppManage {
         networkSettings.setClassName("com.android.tv.settings.connectivity.NetworkActivity");
         networkSettings.setPck("com.android.tv.settings");
         functionModels.add(networkSettings);
-        //////////////////////////////////////////////////
+        /*//////////////////////////////////////////////////
         FunctionModel settings = new FunctionModel();
         settings.setName("Settings");
         settings.setIcon(R.drawable.ic_settings_settings);
         settings.setClassName("com.android.tv.settings.Settings");
         settings.setPck("com.android.tv.settings");
-        //functionModels.add(settings);
+        functionModels.add(settings);
+        //////////////////////////////////////////////////
+        FunctionModel settingsBluetooth = new FunctionModel();
+        settingsBluetooth.setName("Bluetooth");
+        settingsBluetooth.setIcon(R.drawable.ic_settings_settings);
+        settingsBluetooth.setClassName("com.android.tv.settings.bluetoothSettings");
+        settingsBluetooth.setPck("com.android.tv.settings");
+        functionModels.add(settingsBluetooth);*/
 
         return functionModels;
     }

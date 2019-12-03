@@ -16,6 +16,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -36,42 +37,32 @@ public class AppDataManage {
         ArrayList<AppModel> listAppLeanback= getLeanbackLaunchAppList();
         ArrayList<AppModel> listApp= getLauncherAppList();
         ArrayList<AppModel> mergedApp= (ArrayList<AppModel>) listAppLeanback.clone();
+        System.out.println(" listAppLeanback :: " +listAppLeanback.size());
+        System.out.println(" listApp :: " +listApp.size());
+        System.out.println(" mergedApp :: " +mergedApp.size());
 
         Set<String> uniquApps=new HashSet<>();
 
         for(AppModel app : listAppLeanback){
             uniquApps.add(app.getPackageName());
         }
-
+        System.out.println(" uniquApps b :: " +uniquApps);
         for(AppModel app : listApp){
             if(!uniquApps.contains(app.getPackageName()) ){
                 mergedApp.add(app);
                 uniquApps.add(app.getPackageName());
             }
         }
-        AppModel hb7App = null;
-        for (AppModel app : mergedApp){
-
+        for (int i =0; i < mergedApp.size(); i++){
+            AppModel app = mergedApp.get(i);
             if (app.getPackageName().equals("com.droidlogic.FileBrower")){
                 app.setName("Fichiers");
                 app.setLauncherName("Fichiers");
             }
             if (app.getPackageName().equals("com.app.hb7live")){
-                hb7App = app;
-                //mergedApp.remove(app);
+                Collections.swap(mergedApp, i, 0);
             }
         }
-        if(hb7App!=null){
-            mergedApp.remove(hb7App);
-            if(mergedApp.size()==0){
-                mergedApp.add(hb7App);
-                Log.e("IFFFF","mergedApp.size()==0");
-
-            }else {mergedApp.set(0,hb7App);
-                Log.e("ELSE","else");}
-        }
-
-
         return mergedApp;
     }
 
@@ -85,7 +76,6 @@ public class AppDataManage {
                         Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
         );
         localList = localPackageManager.queryIntentActivities(localIntent,0);
-        Set<ResolveInfo> foo = new HashSet<>(localList);
 
         Iterator<ResolveInfo> localIterator = null;
         ArrayList<AppModel> localArrayList = new ArrayList<>();
@@ -180,7 +170,6 @@ public class AppDataManage {
             arraylistPackage.add("com.droidlogic.FileBrower");
             arraylistPackage.add("com.droidlogic.videoplayer");
             arraylistPackage.add("com.amazon.amazonvideo.livingroom");
-            //arraylistPackage.add("com.beinsports.andcontent");
             arraylistPackage.add("com.orange.ocsgo");
             arraylistPackage.add("net.aietec.epg");
             arraylistPackage.add("com.instagram.android");
@@ -194,7 +183,7 @@ public class AppDataManage {
             arraylistPackage.add("fr.meteo");
             saveListPackage();
         }
-
+        System.out.println(arraylistPackage);
         return arraylistPackage;
     }
     public void saveListPackage(){

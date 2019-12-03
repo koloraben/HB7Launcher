@@ -2,31 +2,25 @@ package com.app.hb7launcher.login;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.app.hb7launcher.MainActivity;
 import com.app.hb7launcher.R;
+import com.app.hb7launcher.utils.Utils;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
+import java.lang.reflect.Method;
 
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 
 public class LoginActivity extends Activity  {
@@ -45,139 +39,116 @@ public class LoginActivity extends Activity  {
         {
             public boolean onKey(View v, int keyCode, KeyEvent event)
             {
-                if (event.getAction() == KeyEvent.ACTION_DOWN)
-                {
-                    switch (keyCode)
-                    {
-                        case KeyEvent.ACTION_DOWN:
-                            code.clearFocus();
-                            loginButton.requestFocus();
-                            break;
-                        case KeyEvent.KEYCODE_DPAD_CENTER:
-                        case KeyEvent.KEYCODE_ENTER:
-                            return checkLogin();
-
-                        default:
-                            break;
+                if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN) {
+                    try {
+                        checkLogin();
+                        return false;
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 }
                 return false;
             }
         });
-         loginButton =(RelativeLayout)findViewById(R.id.loginButton);
+        loginButton =(RelativeLayout)findViewById(R.id.loginButton);
         loginButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                checkLogin();
+                try {
+                    checkLogin();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
             });
 
     }
 
-    public class CheckLoginTask extends AsyncTask<String, Void, Boolean> {
-        @Override
-        protected Boolean doInBackground(String... params) {
-            HttpsURLConnection urlConnection = null;
-            BufferedReader reader = null;
-            String responseJsonStr = null;
+    public boolean checkLogin() throws IOException {
+        boolean valide = false;
+        authenticate(code.getText().toString());
+        return valide;
+    }
 
-            try {
-                // Construct the URL for the get User query
-                final String GET_PROFILE_BASE_URL ="https://api.domain.com/user?";
-                Uri builtUri = Uri.parse(GET_PROFILE_BASE_URL).buildUpon().build();
-                URL url = new URL(builtUri.toString());
-                // Create the request to server and open the connection
-                urlConnection = (HttpsURLConnection) url.openConnection();
-                // Create the SSL connection
-                SSLContext sc;
-                sc = SSLContext.getInstance("TLS");
-                sc.init(null, null, new SecureRandom());
-                urlConnection.setSSLSocketFactory(sc.getSocketFactory());
-                // Add API credentials
-                String user = params[0];
-                String password = params[1];
-                String userpass = user + ":" + password;
-                // Create the Authentication Token
-                String basicAuth = "Basic " + Base64.encodeToString(userpass.getBytes(), Base64.DEFAULT);
-                // Add the required Headers.
-                urlConnection.addRequestProperty("Authorization", basicAuth);
-                urlConnection.addRequestProperty("Content-Type", "application/json");
-                urlConnection.setRequestProperty("accept", "application/json");
-                // Method
-                urlConnection.setRequestMethod("GET");
-                // Connect
-                urlConnection.connect();
+    public void authenticate(String codeValidation) throws IOException {
+        String url = getResources().getString(R.string.base_url) + "/api/validation/serial?code=" + codeValidation + "&serial=" + getSerialNumber() + "&mac=" + Utils.getMACAddress("eth0");
+        Log.e("Utils", Utils.getMACAddress("eth0"));
+        final OkHttpClient client = new OkHttpClient();
 
-                int status = urlConnection.getResponseCode();
-                String reason = urlConnection.getResponseMessage();
-
-                Log.v("LOGIN", status + reason);
-
-                // Read the input stream into a String
-                InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
-                if (inputStream == null) {
-                    // Nothing to do here
-                    return null;
-                }
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                    // But it does make debugging a *lot* easier if you print out the completed
-                    // buffer for debugging.
-                    buffer.append(line + "\n");
-                }
-
-                if (buffer.length() == 0) {
-                    // Stream was empty. No point in parsing.
-                    return null;
-                }
-                responseJsonStr = buffer.toString();
-                //getNameDataFromJson(responseJsonStr);
-
-            } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
-                Log.e("LOGIN", "Error", e);
-
-                return false;
-            } finally {
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (final IOException e) {
-
+        final Request request = new Request.Builder()
+                .url(url)
+                .build();
+        AsyncTask<Void, Void, String> asyncTask = new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+                try {
+                    Response response = client.newCall(request).execute();
+                    if (!response.isSuccessful()) {
+                        Log.e("onFailure", "fail");
+                        //  Toast.makeText(getApplicationContext(), "Désolé le code n'est pas bon!", Toast.LENGTH_SHORT).show();
+                        return null;
                     }
+                    //Toast.makeText(getApplicationContext(), "Merci ...", Toast.LENGTH_SHORT).show();
+                    LoginUtility.saveCode(getBaseContext(), code.getText().toString());
+                    LoginUtility.setUserLoggedIn(getBaseContext(), true);
+                    Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                    startActivity(intent);
+                    return response.body().string();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
                 }
             }
 
-            // if we reach here it means we successfully logged in
-            return true;
-        }
+            @Override
+            protected void onPostExecute(String s) {
+                super.onPostExecute(s);
+                if (s != null) {
 
-        @Override
-        protected void onPostExecute(Boolean result) {
-            super.onPostExecute(result);
-            //login(result);
-        }
+                }
+            }
+        };
+
+        asyncTask.execute();
     }
-    public boolean checkLogin(){
-        boolean valide = false;
-        if (code.getText().toString().toUpperCase().equals("ADMIN")) {
-            Toast.makeText(getApplicationContext(),
-                    "Merci ...",Toast.LENGTH_SHORT).show();
-            LoginUtility.saveCode(getBaseContext(), code.getText().toString());
-            LoginUtility.setUserLoggedIn(getBaseContext(), true);
-            Intent intent = new Intent(getBaseContext(), MainActivity.class);
-            valide = true;
-            startActivity(intent);
-        }else{
-            Toast.makeText(getApplicationContext(), "Désolé le code n'est pas bon!",Toast.LENGTH_SHORT).show();
 
+    public static String getSerialNumber() {
+        String serialNumber;
+
+        try {
+            Class<?> c = Class.forName("android.os.SystemProperties");
+            Method get = c.getMethod("get", String.class);
+
+            serialNumber = (String) get.invoke(c, "gsm.sn1");
+            Log.e("gsm.sn1: ", serialNumber);
+            if (serialNumber.equals("")) {
+                serialNumber = (String) get.invoke(c, "ril.serialnumber");
+                Log.e("ril.serialnumber: ", serialNumber);
+            }
+            if (serialNumber.equals("")) {
+                serialNumber = (String) get.invoke(c, "ro.serialno");
+                Log.e("ro.serialno: ", serialNumber);
+            }
+            if (serialNumber.equals("")) {
+                serialNumber = (String) get.invoke(c, "sys.serialnumber");
+                Log.e("sys.serialnumber: ", serialNumber);
+            }
+            if (serialNumber.equals("")) {
+                serialNumber = Build.SERIAL;
+                Log.e("Build.SERIAL: ", serialNumber);
+            }
+
+            // If none of the methods above worked
+            if (serialNumber.equals(""))
+                serialNumber = null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            serialNumber = null;
         }
-        return valide;
+
+        return serialNumber;
+    }
+    @Override
+    public void onBackPressed() {
     }
 }

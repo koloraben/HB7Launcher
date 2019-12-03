@@ -92,6 +92,7 @@
     <string name="related_movies">Related Movies</string>
     <string name="download_video">Download Video</string>
     <string name="remove_video">Remove Video</string>
+    <string name="base_url">http://188.165.194.82:8001</string>
 
 
 
