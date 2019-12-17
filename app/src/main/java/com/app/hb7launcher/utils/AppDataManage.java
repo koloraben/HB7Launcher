@@ -8,12 +8,18 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.app.hb7launcher.R;
 import com.app.hb7launcher.model.AppModel;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,6 +27,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
+
+import static com.app.hb7launcher.utils.Utils.installPackage;
 
 public class AppDataManage {
 
@@ -33,7 +42,8 @@ public class AppDataManage {
         getListPackage();
     }
 
-    public ArrayList<AppModel> getLaunchAppList() {
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public ArrayList<AppModel> getLaunchAppList(Context context) {
         ArrayList<AppModel> listAppLeanback= getLeanbackLaunchAppList();
         ArrayList<AppModel> listApp= getLauncherAppList();
         ArrayList<AppModel> mergedApp= (ArrayList<AppModel>) listAppLeanback.clone();
@@ -61,6 +71,26 @@ public class AppDataManage {
             }
             if (app.getPackageName().equals("com.app.hb7live")){
                 Collections.swap(mergedApp, i, 0);
+            }
+            if(app.getPackageName().equals("com.android.vending")){
+                mergedApp.remove(app);
+            }
+
+        }
+        boolean isExistCanal = mergedApp.stream().noneMatch(new Predicate<AppModel>() {
+            @Override
+            public boolean test(AppModel appli) {
+                return appli.getPackageName().equals("com.canal.android.canal");
+            }
+        });
+        if(!isExistCanal){
+            try {
+                InputStream is = context.getResources().openRawResource(R.raw.mycanal);
+                installPackage(context, is, "com.canal.android.canal");
+                Toast.makeText(context, "mycanal installed", Toast.LENGTH_SHORT).show();
+                System.out.println(" mycanal installed ");
+            } catch (IOException e) {
+                Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }
         return mergedApp;

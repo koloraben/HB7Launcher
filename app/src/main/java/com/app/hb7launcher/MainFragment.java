@@ -5,8 +5,10 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.annotation.RequiresApi;
 import android.support.v17.leanback.app.VerticalGridFragment;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.FocusHighlight;
@@ -30,12 +32,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainFragment extends VerticalGridFragment {
-    private static final int COLUMNS = 7;
+    private static final int COLUMNS = 4;
     private static final int ZOOM_FACTOR = FocusHighlight.ZOOM_FACTOR_LARGE;
     private Context mContext=getContext();
     private static final String TAG = "MainFragmentLauncherHB7";
     BroadcastReceiver mServiceReceiver;
     private ArrayObjectAdapter mAdapter;
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupRowAdapter();
@@ -55,6 +58,7 @@ public class MainFragment extends VerticalGridFragment {
         };
 
     }
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private void setupRowAdapter() {
         VerticalGridPresenter gridPresenter = new VerticalGridPresenter(ZOOM_FACTOR);
         gridPresenter.setNumberOfColumns(COLUMNS);
@@ -84,8 +88,9 @@ public class MainFragment extends VerticalGridFragment {
         List<FunctionModel> functionModels = functionAppManage.getFunctionList(mContext);
         mAdapter.addAll(mAdapter.size(),functionModels);
     };
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private void createRows() {
-        ArrayList<AppModel> appDataList = new AppDataManage(getContext()).getLaunchAppList();
+        ArrayList<AppModel> appDataList = new AppDataManage(getContext()).getLaunchAppList(getContext());
         mAdapter.addAll(0,  appDataList);
         createSettings();
     }
@@ -155,6 +160,7 @@ public class MainFragment extends VerticalGridFragment {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public void addApp(Context context, Intent intent) {
         AppDataManage appDataManage = new AppDataManage(context);
         if (!appDataManage.getArraylistPackage().contains(intent.getData().getSchemeSpecificPart())) {
