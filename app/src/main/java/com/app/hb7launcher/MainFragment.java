@@ -34,6 +34,7 @@ import java.util.List;
 public class MainFragment extends VerticalGridFragment {
     private static final int COLUMNS = 4;
     private static final int ZOOM_FACTOR = FocusHighlight.ZOOM_FACTOR_LARGE;
+    private boolean isReceiverRegistered = false;
     private Context mContext=getContext();
     private static final String TAG = "MainFragmentLauncherHB7";
     BroadcastReceiver mServiceReceiver;
@@ -80,6 +81,7 @@ public class MainFragment extends VerticalGridFragment {
         filter.addAction("android.intent.action.PACKAGE_ADDED");
         filter.addDataScheme("package");
         getActivity().registerReceiver(mServiceReceiver, filter);
+        isReceiverRegistered = true;
     }
 
     private void createSettings(){
@@ -87,7 +89,15 @@ public class MainFragment extends VerticalGridFragment {
 
         List<FunctionModel> functionModels = functionAppManage.getFunctionList(mContext);
         mAdapter.addAll(mAdapter.size(),functionModels);
-    };
+    }
+    @Override
+     public void onPause() {
+        super.onPause();
+        if(isReceiverRegistered){
+            getActivity().unregisterReceiver(mServiceReceiver);
+            isReceiverRegistered = false;
+        }
+    }
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void createRows() {
         ArrayList<AppModel> appDataList = new AppDataManage(getContext()).getLaunchAppList(getContext());

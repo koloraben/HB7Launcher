@@ -11,25 +11,18 @@ import android.content.pm.ResolveInfo;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.app.hb7launcher.R;
 import com.app.hb7launcher.model.AppModel;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Predicate;
 
-import static com.app.hb7launcher.utils.Utils.installPackage;
 
 public class AppDataManage {
 
@@ -47,51 +40,35 @@ public class AppDataManage {
         ArrayList<AppModel> listAppLeanback= getLeanbackLaunchAppList();
         ArrayList<AppModel> listApp= getLauncherAppList();
         ArrayList<AppModel> mergedApp= (ArrayList<AppModel>) listAppLeanback.clone();
-        System.out.println(" listAppLeanback :: " +listAppLeanback.size());
-        System.out.println(" listApp :: " +listApp.size());
-        System.out.println(" mergedApp :: " +mergedApp.size());
 
         Set<String> uniquApps=new HashSet<>();
 
         for(AppModel app : listAppLeanback){
             uniquApps.add(app.getPackageName());
         }
-        System.out.println(" uniquApps b :: " +uniquApps);
         for(AppModel app : listApp){
             if(!uniquApps.contains(app.getPackageName()) ){
                 mergedApp.add(app);
                 uniquApps.add(app.getPackageName());
             }
         }
-        for (int i =0; i < mergedApp.size(); i++){
+        for (int i = 0; i < mergedApp.size(); i++){
             AppModel app = mergedApp.get(i);
             if (app.getPackageName().equals("com.droidlogic.FileBrower")){
                 app.setName("Fichiers");
                 app.setLauncherName("Fichiers");
-            }
-            if (app.getPackageName().equals("com.app.hb7live")){
-                Collections.swap(mergedApp, i, 0);
-            }
-            if(app.getPackageName().equals("com.android.vending")){
-                mergedApp.remove(app);
+                break;
             }
 
         }
-        boolean isExistCanal = mergedApp.stream().noneMatch(new Predicate<AppModel>() {
-            @Override
-            public boolean test(AppModel appli) {
-                return appli.getPackageName().equals("com.canal.android.canal");
+        for (int i = 0; i < mergedApp.size(); i++) {
+            AppModel app = mergedApp.get(i);
+            if (app.getPackageName().equals("com.app.hb7live")){
+                mergedApp.remove(i);
+                mergedApp.add(0, app);
+                break;
             }
-        });
-        if(!isExistCanal){
-            try {
-                InputStream is = context.getResources().openRawResource(R.raw.mycanal);
-                installPackage(context, is, "com.canal.android.canal");
-                Toast.makeText(context, "mycanal installed", Toast.LENGTH_SHORT).show();
-                System.out.println(" mycanal installed ");
-            } catch (IOException e) {
-                Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
+
         }
         return mergedApp;
     }
@@ -191,25 +168,28 @@ public class AppDataManage {
         String json = sharedPreferences.getString(listPackage,null);
         Type type = new TypeToken<ArrayList<String>>(){}.getType();
         arraylistPackage = gson.fromJson(json,type);
-        if (arraylistPackage == null){
+        if (arraylistPackage == null || arraylistPackage.size() < 19) {
             arraylistPackage = new ArrayList<>();
+
+            arraylistPackage.add("com.droidlogic.FileBrower");
+            arraylistPackage.add("com.droidlogic.videoplayer");
+            arraylistPackage.add("com.google.android.youtube.tv");
+
             arraylistPackage.add("com.canal.android.canal");
             arraylistPackage.add("ptv.bein.ui");
             arraylistPackage.add("com.sfr.android.sfrsport");
             arraylistPackage.add("com.app.hb7live");
-            arraylistPackage.add("com.droidlogic.FileBrower");
-            arraylistPackage.add("com.droidlogic.videoplayer");
-            arraylistPackage.add("com.amazon.amazonvideo.livingroom");
+            arraylistPackage.add("com.amazon.avod.thirdpartyclient");
             arraylistPackage.add("com.orange.ocsgo");
-            arraylistPackage.add("net.aietec.epg");
             arraylistPackage.add("com.instagram.android");
             arraylistPackage.add("io.makeroid.sarl_alzeto.radio");
             arraylistPackage.add("com.facebook.katana");
             arraylistPackage.add("com.skype.raider");
             arraylistPackage.add("com.twitter.android");
-            arraylistPackage.add("com.google.android.youtube.tv");
             arraylistPackage.add("com.netflix.mediaclient");
-            arraylistPackage.add("com.android.musicfx");
+            arraylistPackage.add("wetv.android.telez");
+            arraylistPackage.add("fr.tfou.max");
+            arraylistPackage.add("tv.molotov.app");
             arraylistPackage.add("fr.meteo");
             saveListPackage();
         }

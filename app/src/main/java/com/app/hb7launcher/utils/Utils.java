@@ -166,34 +166,4 @@ public class Utils {
         } // for now eat exceptions
         return "";
     }
-    public static boolean installPackage(Context context, InputStream in, String packageName)
-            throws IOException {
-        PackageInstaller packageInstaller = context.getPackageManager().getPackageInstaller();
-        PackageInstaller.SessionParams params = new PackageInstaller.SessionParams(
-                PackageInstaller.SessionParams.MODE_FULL_INSTALL);
-        params.setAppPackageName(packageName);
-        // set params
-        int sessionId = packageInstaller.createSession(params);
-        PackageInstaller.Session session = packageInstaller.openSession(sessionId);
-        OutputStream out = session.openWrite("COSU", 0, -1);
-        byte[] buffer = new byte[65536];
-        int c;
-        while ((c = in.read(buffer)) != -1) {
-            out.write(buffer, 0, c);
-        }
-        session.fsync(out);
-        in.close();
-        out.close();
-
-        Intent intent = new Intent(context, MainActivity.class);
-        intent.putExtra("info", "somedata");  // for extra data if needed..
-
-        Random generator = new Random();
-
-        PendingIntent i = PendingIntent.getActivity(context, generator.nextInt(), intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        session.commit(i.getIntentSender());
-
-
-        return true;
-    }
 }

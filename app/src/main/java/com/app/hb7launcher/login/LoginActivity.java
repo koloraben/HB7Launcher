@@ -26,7 +26,7 @@ import okhttp3.Response;
 public class LoginActivity extends Activity  {
     RelativeLayout loginButton;
     EditText code;
-
+    private static final String TAG = "LoginActivity";
     int counter = 3;
 
     @Override
@@ -71,8 +71,8 @@ public class LoginActivity extends Activity  {
     }
 
     public void authenticate(String codeValidation) throws IOException {
-        String url = getResources().getString(R.string.base_url) + "/api/validation/serial?code=" + codeValidation + "&serial=" + getSerialNumber() + "&mac=" + Utils.getMACAddress("eth0");
-        Log.e("Utils", Utils.getMACAddress("eth0"));
+        String url = getResources().getString(R.string.base_url) + "/api/validation/serial?code=" + codeValidation + "&serial=" + getSerialNumber() + "&macwlan0=" + Utils.getMACAddress("wlan0") + "&maceth0=" +Utils.getMACAddress("eth0" );
+        Log.e( TAG + " URLvalid ", url);
         final OkHttpClient client = new OkHttpClient();
 
         final Request request = new Request.Builder()
