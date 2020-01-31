@@ -54,7 +54,7 @@ public class AppDataManage {
         }
         for (int i = 0; i < mergedApp.size(); i++){
             AppModel app = mergedApp.get(i);
-            if (app.getPackageName().equals("com.droidlogic.FileBrower")){
+            if (app.getPackageName().equals("com.bee.software.filebrowser.beefilesexplorer")){
                 app.setName("Fichiers");
                 app.setLauncherName("Fichiers");
                 break;
@@ -171,7 +171,7 @@ public class AppDataManage {
         if (arraylistPackage == null || arraylistPackage.size() < 19) {
             arraylistPackage = new ArrayList<>();
 
-            arraylistPackage.add("com.droidlogic.FileBrower");
+            arraylistPackage.add("com.bee.software.filebrowser.beefilesexplorer");
             arraylistPackage.add("com.droidlogic.videoplayer");
             arraylistPackage.add("com.google.android.youtube.tv");
 
