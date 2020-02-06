@@ -29,7 +29,7 @@ public class MainActivity  extends Activity {
         super.onCreate(savedInstanceState);
         String code = LoginUtility.getCode(getBaseContext());
 
-        if (!LoginUtility.isUserLoggedIn(this) && code == null) {
+       /* if (!LoginUtility.isUserLoggedIn(this) && code == null) {
             startActivity(new Intent(this, LoginActivity.class));
         } else {
             if (code != null) {
@@ -39,7 +39,7 @@ public class MainActivity  extends Activity {
                     e.printStackTrace();
                 }
             }
-        }
+        }*/
         setContentView(R.layout.main_activity);
     }
     @Override
@@ -47,7 +47,7 @@ public class MainActivity  extends Activity {
         super.onResume();
         String code = LoginUtility.getCode(getBaseContext());
 
-        if (!LoginUtility.isUserLoggedIn(this) && code == null) {
+        /*if (!LoginUtility.isUserLoggedIn(this) && code == null) {
             startActivity(new Intent(this, LoginActivity.class));
         } else {
             if (code != null) {
@@ -57,7 +57,7 @@ public class MainActivity  extends Activity {
                     e.printStackTrace();
                 }
             }
-        }
+        }*/
     }
 
     @Override

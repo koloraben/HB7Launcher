@@ -34,29 +34,15 @@ import java.util.List;
 public class MainFragment extends VerticalGridFragment {
     private static final int COLUMNS = 4;
     private static final int ZOOM_FACTOR = FocusHighlight.ZOOM_FACTOR_LARGE;
-    private boolean isReceiverRegistered = false;
     private Context mContext=getContext();
     private static final String TAG = "MainFragmentLauncherHB7";
-    BroadcastReceiver mServiceReceiver;
     private ArrayObjectAdapter mAdapter;
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupRowAdapter();
         setupEventListeners();
-        mServiceReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                // when package removed
-                if (intent.getAction().equals("android.intent.action.PACKAGE_ADDED")) {
-                    addApp(context, intent);
-                }
-                // when package installed
-                else if (intent.getAction().equals("android.intent.action.PACKAGE_REMOVED")) {
-                    removeApp(context, intent);
-                }
-            }
-        };
+
 
     }
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -73,30 +59,12 @@ public class MainFragment extends VerticalGridFragment {
         startEntranceTransition();
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        IntentFilter filter = new IntentFilter();
-        filter.addAction("android.intent.action.PACKAGE_REMOVED");
-        filter.addAction("android.intent.action.PACKAGE_ADDED");
-        filter.addDataScheme("package");
-        getActivity().registerReceiver(mServiceReceiver, filter);
-        isReceiverRegistered = true;
-    }
 
     private void createSettings(){
         FunctionAppManage functionAppManage = new FunctionAppManage(getContext());
 
         List<FunctionModel> functionModels = functionAppManage.getFunctionList(mContext);
         mAdapter.addAll(mAdapter.size(),functionModels);
-    }
-    @Override
-     public void onPause() {
-        super.onPause();
-        if(isReceiverRegistered){
-            getActivity().unregisterReceiver(mServiceReceiver);
-            isReceiverRegistered = false;
-        }
     }
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void createRows() {

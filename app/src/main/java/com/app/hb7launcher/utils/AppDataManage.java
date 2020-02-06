@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 
 
 public class AppDataManage {
@@ -73,8 +74,10 @@ public class AppDataManage {
         return mergedApp;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public ArrayList<AppModel> getLeanbackLaunchAppList() {
-        List<ResolveInfo> localList=null;
+        List<ResolveInfo> localList;
+        ArrayList<String> listPackages = getListPackage();
         PackageManager localPackageManager = mContext.getPackageManager();
         Intent localIntent = new Intent("android.intent.action.MAIN");
         localIntent.addCategory("android.intent.category.LAUNCHER");
@@ -86,30 +89,32 @@ public class AppDataManage {
 
         Iterator<ResolveInfo> localIterator = null;
         ArrayList<AppModel> localArrayList = new ArrayList<>();
-        if (localList.size() != 0) {
-            localIterator = localList.iterator();
-        }
-        while (localIterator.hasNext()) {
-            ResolveInfo localResolveInfo = (ResolveInfo) localIterator.next();
-            if (getListPackage().contains(localResolveInfo.activityInfo.packageName)){
-                AppModel localAppBean = new AppModel();
-                localAppBean.setIcon(localResolveInfo.activityInfo.loadBanner(localPackageManager) == null ? localResolveInfo.activityInfo.loadIcon(localPackageManager) : localResolveInfo.activityInfo.loadBanner(localPackageManager));
-                localAppBean.setName(localResolveInfo.activityInfo.loadLabel(localPackageManager).toString());
-                localAppBean.setPackageName(localResolveInfo.activityInfo.packageName);
-                localAppBean.setDataDir(localResolveInfo.activityInfo.applicationInfo.publicSourceDir);
-                localAppBean.setLauncherName(localResolveInfo.activityInfo.name);
-                String pkgName = localResolveInfo.activityInfo.packageName;
-                PackageInfo mPackageInfo;
-                try {
-                    mPackageInfo = mContext.getPackageManager().getPackageInfo(pkgName, 0);
-                    if ((mPackageInfo.applicationInfo.flags & mPackageInfo.applicationInfo.FLAG_SYSTEM) > 0) {
-                        localAppBean.setSysApp(true);
-                    }
-                } catch (NameNotFoundException e) {
-                    e.printStackTrace();
-                }
-                if (!localAppBean.getPackageName().equals(mContext.getPackageName())) {
-                    localArrayList.add(localAppBean);
+        for ( String packagId : listPackages) {
+            for (ResolveInfo localResolveInfo:
+                 localList) {
+                if (packagId.equals(localResolveInfo.activityInfo.packageName)){
+                    if(localResolveInfo != null){
+
+
+                        AppModel localAppBean = new AppModel();
+                        localAppBean.setIcon(localResolveInfo.activityInfo.loadBanner(localPackageManager) == null ? localResolveInfo.activityInfo.loadIcon(localPackageManager) : localResolveInfo.activityInfo.loadBanner(localPackageManager));
+                        localAppBean.setName(localResolveInfo.activityInfo.loadLabel(localPackageManager).toString());
+                        localAppBean.setPackageName(localResolveInfo.activityInfo.packageName);
+                        localAppBean.setDataDir(localResolveInfo.activityInfo.applicationInfo.publicSourceDir);
+                        localAppBean.setLauncherName(localResolveInfo.activityInfo.name);
+                        String pkgName = localResolveInfo.activityInfo.packageName;
+                        PackageInfo mPackageInfo;
+                        try {
+                            mPackageInfo = mContext.getPackageManager().getPackageInfo(pkgName, 0);
+                            if ((mPackageInfo.applicationInfo.flags & mPackageInfo.applicationInfo.FLAG_SYSTEM) > 0) {
+                                localAppBean.setSysApp(true);
+                            }
+                        } catch (NameNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                        if (!localAppBean.getPackageName().equals(mContext.getPackageName())) {
+                            localArrayList.add(localAppBean);
+                        }}
                 }
             }
         }
@@ -117,8 +122,10 @@ public class AppDataManage {
         return localArrayList;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     public ArrayList<AppModel> getLauncherAppList() {
-        List<ResolveInfo> localList=null;
+        List<ResolveInfo> localList;
+        ArrayList<String> listPackages = getListPackage();
         PackageManager localPackageManager = mContext.getPackageManager();
         Intent localIntent = new Intent("android.intent.action.MAIN");
         localIntent.addCategory("android.intent.category.LEANBACK_LAUNCHER");
@@ -127,38 +134,37 @@ public class AppDataManage {
                         Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED
         );
         localList = localPackageManager.queryIntentActivities(localIntent,0);
-        Set<ResolveInfo> foo = new HashSet<>(localList);
-
-        Iterator<ResolveInfo> localIterator = null;
         ArrayList<AppModel> localArrayList = new ArrayList<>();
-        if (localList.size() != 0) {
-            localIterator = localList.iterator();
-        }
-        while (localIterator.hasNext()) {
-            ResolveInfo localResolveInfo = (ResolveInfo) localIterator.next();
-            if (getListPackage().contains(localResolveInfo.activityInfo.packageName)){
-                AppModel localAppBean = new AppModel();
-                localAppBean.setIcon(localResolveInfo.activityInfo.loadBanner(localPackageManager) == null ? localResolveInfo.activityInfo.loadIcon(localPackageManager) : localResolveInfo.activityInfo.loadBanner(localPackageManager));
-                localAppBean.setName(localResolveInfo.activityInfo.loadLabel(localPackageManager).toString());
-                localAppBean.setPackageName(localResolveInfo.activityInfo.packageName);
-                localAppBean.setDataDir(localResolveInfo.activityInfo.applicationInfo.publicSourceDir);
-                localAppBean.setLauncherName(localResolveInfo.activityInfo.name);
-                String pkgName = localResolveInfo.activityInfo.packageName;
-                PackageInfo mPackageInfo;
-                try {
-                    mPackageInfo = mContext.getPackageManager().getPackageInfo(pkgName, 0);
-                    if ((mPackageInfo.applicationInfo.flags & mPackageInfo.applicationInfo.FLAG_SYSTEM) > 0) {
-                        localAppBean.setSysApp(true);
-                    }
-                } catch (NameNotFoundException e) {
-                    e.printStackTrace();
-                }
-                if (!localAppBean.getPackageName().equals(mContext.getPackageName())) {
-                    localArrayList.add(localAppBean);
+        for ( String packagId : listPackages) {
+            for (ResolveInfo localResolveInfo:
+                    localList) {
+                if (packagId.equals(localResolveInfo.activityInfo.packageName)){
+                    if(localResolveInfo != null){
+
+
+                        AppModel localAppBean = new AppModel();
+                        localAppBean.setIcon(localResolveInfo.activityInfo.loadBanner(localPackageManager) == null ? localResolveInfo.activityInfo.loadIcon(localPackageManager) : localResolveInfo.activityInfo.loadBanner(localPackageManager));
+                        localAppBean.setName(localResolveInfo.activityInfo.loadLabel(localPackageManager).toString());
+                        localAppBean.setPackageName(localResolveInfo.activityInfo.packageName);
+                        localAppBean.setDataDir(localResolveInfo.activityInfo.applicationInfo.publicSourceDir);
+                        localAppBean.setLauncherName(localResolveInfo.activityInfo.name);
+                        String pkgName = localResolveInfo.activityInfo.packageName;
+                        PackageInfo mPackageInfo;
+                        try {
+                            mPackageInfo = mContext.getPackageManager().getPackageInfo(pkgName, 0);
+                            if ((mPackageInfo.applicationInfo.flags & mPackageInfo.applicationInfo.FLAG_SYSTEM) > 0) {
+                                localAppBean.setSysApp(true);
+                            }
+                        } catch (NameNotFoundException e) {
+                            e.printStackTrace();
+                        }
+                        if (!localAppBean.getPackageName().equals(mContext.getPackageName())) {
+                            localArrayList.add(localAppBean);
+                        }}
                 }
             }
         }
-        Log.e("Applications size",localArrayList.size()+"");
+
         return localArrayList;
     }
 
