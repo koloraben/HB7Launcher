@@ -1,4 +1,3 @@
-
 apply plugin: 'com.android.application'
 
 android {
@@ -47,6 +46,7 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:' + rootProject.supportLibVersion
     implementation 'android.arch.lifecycle:extensions:' + rootProject.archLifecycleVersion
     implementation 'android.arch.persistence.room:runtime:' + rootProject.archRoomVersion
+    implementation 'com.android.support:support-v4:'+rootProject.supportLibVersion
     annotationProcessor "android.arch.lifecycle:compiler:" + rootProject.archLifecycleVersion
     annotationProcessor "android.arch.persistence.room:compiler:" + rootProject.archRoomVersion
     implementation 'pl.droidsonroids.gif:android-gif-drawable:1.1.17'
@@ -54,14 +54,14 @@ dependencies {
     implementation 'com.android.support:leanback-v17:' + rootProject.supportLibVersion
     implementation 'com.android.support:appcompat-v7:' + rootProject.supportLibVersion
 
-    implementation 'com.android.support:preference-v7:'+ rootProject.supportLibVersion
+    implementation 'com.android.support:preference-v7:' + rootProject.supportLibVersion
     implementation 'com.android.support:preference-leanback-v17:' + rootProject.supportLibVersion
     implementation 'com.android.support:preference-v14:' + rootProject.supportLibVersion
     implementation 'com.jakewharton:process-phoenix:2.0.0'
     implementation 'com.squareup.okhttp:okhttp:2.5.0'
     implementation "com.google.code.gson:gson:2.8.1"
     implementation "com.android.support:palette-v7:" + rootProject.supportLibVersion
-    implementation ('com.github.bumptech.glide:glide:4.7.1') {
+    implementation('com.github.bumptech.glide:glide:4.7.1') {
         exclude group: "com.android.support"
     }
     implementation 'com.android.support:support-tv-provider:' + rootProject.supportLibVersion
@@ -77,5 +77,3 @@ dependencies {
     annotationProcessor "com.google.dagger:dagger-compiler:2.15"
 
 }
-
-

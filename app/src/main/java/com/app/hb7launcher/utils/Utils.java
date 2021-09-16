@@ -18,6 +18,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInstaller;
+import android.os.Build;
+import android.util.Log;
 
 import com.app.hb7launcher.MainActivity;
 
@@ -27,9 +29,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -165,5 +169,48 @@ public class Utils {
         } catch (Exception ignored) {
         } // for now eat exceptions
         return "";
+    }
+    public static String getSerialNumber() {
+        String serialNumber;
+
+        try {
+            Class<?> c = Class.forName("android.os.SystemProperties");
+            Method get = c.getMethod("get", String.class);
+
+            serialNumber = (String) get.invoke(c, "gsm.sn1");
+            Log.e("gsm.sn1: ", serialNumber);
+            if (serialNumber.equals("")) {
+                serialNumber = (String) get.invoke(c, "ril.serialnumber");
+                Log.e("ril.serialnumber: ", serialNumber);
+            }
+            if (serialNumber.equals("")) {
+                serialNumber = (String) get.invoke(c, "ro.serialno");
+                Log.e("ro.serialno: ", serialNumber);
+            }
+            if (serialNumber.equals("")) {
+                serialNumber = (String) get.invoke(c, "sys.serialnumber");
+                Log.e("sys.serialnumber: ", serialNumber);
+            }
+            if (serialNumber.equals("")) {
+                serialNumber = Build.SERIAL;
+                Log.e("Build.SERIAL: ", serialNumber);
+            }
+
+            // If none of the methods above worked
+            if (serialNumber.equals("") || serialNumber.equals("unknown"))
+                serialNumber = "";
+        } catch (Exception e) {
+            e.printStackTrace();
+            serialNumber = "";
+        }
+
+        return serialNumber;
+    }
+    public static String generateIdBox(){
+        String wlan0 = getMACAddress("wlan0").isEmpty()?"":getMACAddress("wlan0");
+        String eth0 = getMACAddress("eth0").isEmpty()?"":getMACAddress("eth0");
+        String serialNumber = getSerialNumber();
+
+        return serialNumber+wlan0+eth0+(new Date().getTime());
     }
 }

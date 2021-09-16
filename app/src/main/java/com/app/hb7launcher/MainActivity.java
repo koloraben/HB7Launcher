@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.app.hb7launcher.login.LoginActivity;
 import com.app.hb7launcher.login.LoginUtility;
@@ -21,15 +22,18 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class MainActivity  extends Activity {
+import static com.app.hb7launcher.login.LoginUtility.getIdBox;
+
+public class MainActivity extends Activity {
 
     private static final String TAG = "MainActivity";
 
-    @Override public void onCreate(Bundle savedInstanceState) {
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         String code = LoginUtility.getCode(getBaseContext());
 
-       /* if (!LoginUtility.isUserLoggedIn(this) && code == null) {
+        /*if (!LoginUtility.isUserLoggedIn(this) && code == null) {
             startActivity(new Intent(this, LoginActivity.class));
         } else {
             if (code != null) {
@@ -42,6 +46,7 @@ public class MainActivity  extends Activity {
         }*/
         setContentView(R.layout.main_activity);
     }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -67,8 +72,11 @@ public class MainActivity  extends Activity {
     }
 
     public void authenticate(String codeValidation, Context context) throws IOException {
-        String url = getResources().getString(R.string.base_url) + "/api/validation/serial?code=" + codeValidation + "&serial=" + getSerialNumber() + "&macwlan0=" + Utils.getMACAddress("wlan0") + "&maceth0=" +Utils.getMACAddress("eth0" );
-        Log.e( TAG + " URLvalid ", url);        final OkHttpClient client = new OkHttpClient();
+        String url = getResources().getString(R.string.base_url) + "/api/validation/serial?code=" + codeValidation + "&serial=" + Utils.getSerialNumber() + "&macwlan0=" + Utils.getMACAddress("wlan0") + "&maceth0=" + Utils.getMACAddress("eth0");
+        String urlBoxValidation = getResources().getString(R.string.base_url) + "/api/validation/serial?idbox=" + getIdBox(context);
+        System.out.println(url);
+        Log.e(TAG + " URLvalid ", url);
+        final OkHttpClient client = new OkHttpClient();
 
         final Request request = new Request.Builder()
                 .url(url)
@@ -83,7 +91,7 @@ public class MainActivity  extends Activity {
                         Intent intent = new Intent(getBaseContext(), LoginActivity.class);
                         startActivity(intent);
                         Log.e("onFailure", "fail");
-                        //  Toast.makeText(getApplicationContext(), "Désolé le code n'est pas bon!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Désolé le code n'est pas bon!", Toast.LENGTH_SHORT).show();
                         return null;
                     }
                     return response.body().string();
@@ -105,40 +113,4 @@ public class MainActivity  extends Activity {
         asyncTask.execute();
     }
 
-    public static String getSerialNumber() {
-        String serialNumber;
-
-        try {
-            Class<?> c = Class.forName("android.os.SystemProperties");
-            Method get = c.getMethod("get", String.class);
-
-            serialNumber = (String) get.invoke(c, "gsm.sn1");
-            Log.e("gsm.sn1: ", serialNumber);
-            if (serialNumber.equals("")) {
-                serialNumber = (String) get.invoke(c, "ril.serialnumber");
-                Log.e("ril.serialnumber: ", serialNumber);
-            }
-            if (serialNumber.equals("")) {
-                serialNumber = (String) get.invoke(c, "ro.serialno");
-                Log.e("ro.serialno: ", serialNumber);
-            }
-            if (serialNumber.equals("")) {
-                serialNumber = (String) get.invoke(c, "sys.serialnumber");
-                Log.e("sys.serialnumber: ", serialNumber);
-            }
-            if (serialNumber.equals("")) {
-                serialNumber = Build.SERIAL;
-                Log.e("Build.SERIAL: ", serialNumber);
-            }
-
-            // If none of the methods above worked
-            if (serialNumber.equals(""))
-                serialNumber = null;
-        } catch (Exception e) {
-            e.printStackTrace();
-            serialNumber = null;
-        }
-
-        return serialNumber;
-    }
 }

@@ -1,7 +1,9 @@
 package com.app.hb7launcher.login;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,6 +15,8 @@ import android.widget.RelativeLayout;
 
 import com.app.hb7launcher.MainActivity;
 import com.app.hb7launcher.R;
+import com.app.hb7launcher.utils.ColorToast.*;
+import com.app.hb7launcher.utils.MyToast;
 import com.app.hb7launcher.utils.Utils;
 
 import java.io.IOException;
@@ -22,12 +26,26 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+import static com.app.hb7launcher.login.LoginUtility.getIdBox;
+import static com.app.hb7launcher.utils.ColorToast.GREEN;
+import static com.app.hb7launcher.utils.Utils.getSerialNumber;
 
-public class LoginActivity extends Activity  {
+
+public class LoginActivity extends Activity {
     RelativeLayout loginButton;
     EditText code;
     private static final String TAG = "LoginActivity";
     int counter = 3;
+
+    String checkInternet(Context context) {
+        final ConnectivityManager connMgr = (ConnectivityManager) context
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connMgr.getActiveNetworkInfo().isConnected()) {
+            return "connecté";
+        } else {
+            return "pas de connexion !";
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,12 +53,11 @@ public class LoginActivity extends Activity  {
         setContentView(R.layout.activity_login);
 
         code = (EditText) findViewById(R.id.username);
-        code.setOnKeyListener(new View.OnKeyListener()
-        {
-            public boolean onKey(View v, int keyCode, KeyEvent event)
-            {
+        code.setOnKeyListener(new View.OnKeyListener() {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN) {
                     try {
+                        MyToast.createNotif(getApplicationContext(), checkInternet(getApplicationContext()), GREEN);
                         checkLogin();
                         return false;
                     } catch (IOException e) {
@@ -50,17 +67,17 @@ public class LoginActivity extends Activity  {
                 return false;
             }
         });
-        loginButton =(RelativeLayout)findViewById(R.id.loginButton);
-        loginButton.setOnClickListener(new View.OnClickListener(){
+        loginButton = (RelativeLayout) findViewById(R.id.loginButton);
+        loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
                 try {
                     checkLogin();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-            });
+        });
 
     }
 
@@ -71,8 +88,9 @@ public class LoginActivity extends Activity  {
     }
 
     public void authenticate(String codeValidation) throws IOException {
-        String url = getResources().getString(R.string.base_url) + "/api/validation/serial?code=" + codeValidation + "&serial=" + getSerialNumber() + "&macwlan0=" + Utils.getMACAddress("wlan0") + "&maceth0=" +Utils.getMACAddress("eth0" );
-        Log.e( TAG + " URLvalid ", url);
+        String url = getResources().getString(R.string.base_url) + "/api/validation/serial?code=" + codeValidation + "&serial=" + getSerialNumber() + "&macwlan0=" + Utils.getMACAddress("wlan0") + "&maceth0=" + Utils.getMACAddress("eth0");
+        String urlBoxValidation = getResources().getString(R.string.base_url) + "/api/validation/serial?idbox=" + getIdBox(getApplicationContext()) + "&code=" + codeValidation;
+        Log.e(TAG + " URLvalid ", url);
         final OkHttpClient client = new OkHttpClient();
 
         final Request request = new Request.Builder()
@@ -112,42 +130,6 @@ public class LoginActivity extends Activity  {
         asyncTask.execute();
     }
 
-    public static String getSerialNumber() {
-        String serialNumber;
-
-        try {
-            Class<?> c = Class.forName("android.os.SystemProperties");
-            Method get = c.getMethod("get", String.class);
-
-            serialNumber = (String) get.invoke(c, "gsm.sn1");
-            Log.e("gsm.sn1: ", serialNumber);
-            if (serialNumber.equals("")) {
-                serialNumber = (String) get.invoke(c, "ril.serialnumber");
-                Log.e("ril.serialnumber: ", serialNumber);
-            }
-            if (serialNumber.equals("")) {
-                serialNumber = (String) get.invoke(c, "ro.serialno");
-                Log.e("ro.serialno: ", serialNumber);
-            }
-            if (serialNumber.equals("")) {
-                serialNumber = (String) get.invoke(c, "sys.serialnumber");
-                Log.e("sys.serialnumber: ", serialNumber);
-            }
-            if (serialNumber.equals("")) {
-                serialNumber = Build.SERIAL;
-                Log.e("Build.SERIAL: ", serialNumber);
-            }
-
-            // If none of the methods above worked
-            if (serialNumber.equals(""))
-                serialNumber = null;
-        } catch (Exception e) {
-            e.printStackTrace();
-            serialNumber = null;
-        }
-
-        return serialNumber;
-    }
     @Override
     public void onBackPressed() {
     }

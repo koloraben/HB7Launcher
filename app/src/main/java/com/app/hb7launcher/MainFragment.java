@@ -34,9 +34,10 @@ import java.util.List;
 public class MainFragment extends VerticalGridFragment {
     private static final int COLUMNS = 4;
     private static final int ZOOM_FACTOR = FocusHighlight.ZOOM_FACTOR_LARGE;
-    private Context mContext=getContext();
+    private Context mContext = getContext();
     private static final String TAG = "MainFragmentLauncherHB7";
     private ArrayObjectAdapter mAdapter;
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +46,15 @@ public class MainFragment extends VerticalGridFragment {
 
 
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    @Override
+    public void onStart() {
+        super.onStart();
+        mAdapter.clear();
+        createRows();
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void setupRowAdapter() {
         VerticalGridPresenter gridPresenter = new VerticalGridPresenter(ZOOM_FACTOR);
@@ -60,16 +70,17 @@ public class MainFragment extends VerticalGridFragment {
     }
 
 
-    private void createSettings(){
+    private void createSettings() {
         FunctionAppManage functionAppManage = new FunctionAppManage(getContext());
 
         List<FunctionModel> functionModels = functionAppManage.getFunctionList(mContext);
-        mAdapter.addAll(mAdapter.size(),functionModels);
+        mAdapter.addAll(mAdapter.size(), functionModels);
     }
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void createRows() {
         ArrayList<AppModel> appDataList = new AppDataManage(getContext()).getLaunchAppList(getContext());
-        mAdapter.addAll(0,  appDataList);
+        mAdapter.addAll(0, appDataList);
         createSettings();
     }
 
@@ -89,43 +100,43 @@ public class MainFragment extends VerticalGridFragment {
                         appBean.getPackageName());
                 if (launchIntent != null) {
                     getActivity().startActivity(launchIntent);
-                }else{
-                     launchIntent = getActivity().getPackageManager().getLaunchIntentForPackage(
+                } else {
+                    launchIntent = getActivity().getPackageManager().getLaunchIntentForPackage(
                             appBean.getPackageName());
                     try {
                         getActivity().startActivity(launchIntent);
-                    }catch (Exception e){
-                        Log.e("my launcher",e.getMessage());
+                    } catch (Exception e) {
+                        Log.e("my launcher", e.getMessage());
                         Toast.makeText(getContext(), "probleme dans l'Application",
                                 Toast.LENGTH_LONG).show();
                     }
 
                 }
-             }
-             if (item instanceof FunctionModel){
-                 FunctionModel function = (FunctionModel) item;
-                 try {
-                     if (function.getClassName()!=null){
-                         ComponentName name = new ComponentName(function.getPck(),
-                                 ((FunctionModel) item).getClassName());
-                         Intent i=new Intent(Intent.ACTION_MAIN);
+            }
+            if (item instanceof FunctionModel) {
+                FunctionModel function = (FunctionModel) item;
+                try {
+                    if (function.getClassName() != null) {
+                        ComponentName name = new ComponentName(function.getPck(),
+                                ((FunctionModel) item).getClassName());
+                        Intent i = new Intent(Intent.ACTION_MAIN);
 
-                         i.addCategory(Intent.CATEGORY_LAUNCHER);
-                         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
-                                 Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-                         i.setComponent(name);
+                        i.addCategory(Intent.CATEGORY_LAUNCHER);
+                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
+                                Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+                        i.setComponent(name);
 
-                         startActivity(i);
-                     }
-                     else {
-                        Intent intent = getContext().getPackageManager().getLaunchIntentForPackage("com.android.tv.settings");
+                        startActivity(i);
+                    } else if (function.getPck() != null) {
+                        Intent intent = getContext().getPackageManager().getLaunchIntentForPackage(function.getPck());
                         startActivity(intent);
-                     }
-                 }catch(Exception e){
-                     Log.e("my launcher",e.getMessage());
-                     startActivity(new Intent(Settings.ACTION_SETTINGS));
-                 }
-             }
+                    }
+                } catch (Exception e) {
+                    Log.e("my launcher", e.getMessage());
+                    Toast.makeText(getContext(), "Impossible de démarrer l'application!",
+                            Toast.LENGTH_LONG).show();
+                }
+            }
 
         }
     }

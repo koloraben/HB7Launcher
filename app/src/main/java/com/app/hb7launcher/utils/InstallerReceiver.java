@@ -3,6 +3,7 @@ package com.app.hb7launcher.utils;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
@@ -20,8 +21,13 @@ public class InstallerReceiver extends BroadcastReceiver {
             addApp(context, intent);
         }
         // when package installed
-        else if (intent.getAction().equals("android.intent.action.PACKAGE_REMOVED")) {
+        if (intent.getAction().equals("android.intent.action.PACKAGE_REMOVED")) {
             removeApp(context, intent);
+        }
+        if(intent.getAction().equalsIgnoreCase("android.net.conn.CONNECTIVITY_CHANGE")) {
+            Log.e("BroadcastReceiver ", "connexion "
+                    + " connexion ");
+                MyToast.createNotif(context,checkInternet(context),ColorToast.GREEN);
         }
     }
 
@@ -31,9 +37,9 @@ public class InstallerReceiver extends BroadcastReceiver {
         if (!appDataManage.getArraylistPackage().contains(intent.getData().getSchemeSpecificPart())) {
             appDataManage.getArraylistPackage().add(intent.getData().getSchemeSpecificPart());
             appDataManage.saveListPackage();
-            Intent dialogIntent = new Intent(context.getApplicationContext(), MainActivity.class);
+            /*Intent dialogIntent = new Intent(context.getApplicationContext(), MainActivity.class);
             dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(dialogIntent);
+            context.startActivity(dialogIntent);*/
             Log.e("BroadcastReceiver ", "InstallationReceiver onReceive called "
                     + " PACKAGE_ADDED ");
             Toast.makeText(context, "Application intallée: " + intent.getData().getSchemeSpecificPart(),
@@ -48,12 +54,23 @@ public class InstallerReceiver extends BroadcastReceiver {
         boolean isRemoved = appDataManage.getArraylistPackage().remove(intent.getData().getSchemeSpecificPart());
         if (isRemoved) {
             appDataManage.saveListPackage();
-            Intent dialogIntent = new Intent(context.getApplicationContext(), MainActivity.class);
+            /*Intent dialogIntent = new Intent(context.getApplicationContext(), MainActivity.class);
             dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(dialogIntent);
+            context.startActivity(dialogIntent);*/
             Log.e(" BroadcastReceiver ", " InstallationReceiver onReceive called " + "PACKAGE_REMOVED :" + intent.getData().getSchemeSpecificPart());
             Toast.makeText(context, "Application Supprimé: " + intent.getData().getSchemeSpecificPart(),
                     Toast.LENGTH_LONG).show();
+        }
+
+    }
+
+    String checkInternet(Context context) {
+        final ConnectivityManager connMgr = (ConnectivityManager) context
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connMgr.getActiveNetworkInfo().isConnected()) {
+            return "connecté";
+        } else {
+            return "pas de connexion !";
         }
     }
 }

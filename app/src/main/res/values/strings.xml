@@ -92,9 +92,10 @@
     <string name="related_movies">Related Movies</string>
     <string name="download_video">Download Video</string>
     <string name="remove_video">Remove Video</string>
-    <string name="base_url">http://188.165.194.82:8001</string>
+    <string name="base_url">http://5.50.32.76:8001</string>
 
-
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>
