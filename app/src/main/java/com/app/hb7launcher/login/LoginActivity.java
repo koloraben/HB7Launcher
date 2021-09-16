@@ -102,7 +102,7 @@ public class LoginActivity extends Activity {
                 try {
                     Response response = client.newCall(request).execute();
                     if (!response.isSuccessful()) {
-                        Log.e("onFailure", "fail");
+                        Log.e("onFailure", "fail::"+response.message());
                         //  Toast.makeText(getApplicationContext(), "Désolé le code n'est pas bon!", Toast.LENGTH_SHORT).show();
                         return null;
                     }
@@ -113,6 +113,7 @@ public class LoginActivity extends Activity {
                     startActivity(intent);
                     return response.body().string();
                 } catch (Exception e) {
+                    Log.e("onFailure", "failllllll");
                     e.printStackTrace();
                     return null;
                 }

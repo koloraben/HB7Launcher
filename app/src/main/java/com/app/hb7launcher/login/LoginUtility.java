@@ -52,7 +52,7 @@ public class LoginUtility {
         String idBox = Utils.generateIdBox();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String savedidBox = prefs.getString("ID_BOX", null);
-        if (savedidBox.equals(null)) {
+        if (savedidBox == null) {
             SharedPreferences.Editor editor = prefs.edit();
             editor.putString("ID_BOX", idBox);
             editor.commit();
@@ -63,6 +63,6 @@ public class LoginUtility {
     public static String getIdBox(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String idBox = prefs.getString("ID_BOX", null);
-        return idBox.equals(null)?saveIdBox(context):idBox;
+        return idBox == null?saveIdBox(context):idBox;
     }
 }
