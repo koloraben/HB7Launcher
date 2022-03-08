@@ -24,7 +24,7 @@ public class FunctionAppManage {
         networkSettings.setClassName("com.android.tv.settings.connectivity.NetworkActivity");
         networkSettings.setPck("com.android.tv.settings");
         functionModels.add(networkSettings);
-        /*///////////////////////////////////////////////////
+        ////////////////////////////////////////////////////
         FunctionModel settings = new FunctionModel();
         settings.setName("Settings");
         settings.setIcon(R.drawable.ic_settings_settings);
@@ -38,7 +38,7 @@ public class FunctionAppManage {
         settingsBluetooth.setClassName("com.android.tv.settings.bluetoothSettings");
         settingsBluetooth.setPck("com.android.tv.settings");
         functionModels.add(settingsBluetooth);
-*/
+
         return functionModels;
     }
 }

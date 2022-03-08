@@ -177,7 +177,8 @@ public class AppDataManage {
         if (arraylistPackage == null || arraylistPackage.size() < 19) {
             arraylistPackage = new ArrayList<>();
 
-            arraylistPackage.add("com.bee.software.filebrowser.beefilesexplorer");
+            //arraylistPackage.add("com.bee.software.filebrowser.beefilesexplorer");
+            arraylistPackage.add("com.droidlogic.FileBrower");
             arraylistPackage.add("com.droidlogic.videoplayer");
             arraylistPackage.add("com.google.android.youtube.tv");
 
