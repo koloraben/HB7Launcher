@@ -5,10 +5,12 @@ import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -63,12 +65,18 @@ public class LoginActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         code = (EditText) findViewById(R.id.username);
+        code.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(code, InputMethodManager.SHOW_IMPLICIT);
         code.setOnKeyListener(new View.OnKeyListener() {
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN) {
                     try {
                         //MyToast.createNotif(LoginActivity.this, checkInternet(getApplicationContext()), GREEN);
-                        authenticate(code.getText().toString());
+                        if(TextUtils.isEmpty((code.getText().toString().trim()))){
+                            Toast.makeText(getApplicationContext(), "Attention, vous n'avez rien saisi !", Toast.LENGTH_LONG).show();
+                        }
+                        authenticate(code.getText().toString().trim());
                         return false;
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -76,6 +84,18 @@ public class LoginActivity extends Activity {
                 }
                 return false;
             }
+        });
+        code.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                // TODO Auto-generated method stub
+                if (hasFocus) {
+                    requestFocus();
+                } else {
+                    code.clearFocus();
+                }
+            }
+
         });
         loginButton = (Button) findViewById(R.id.btn_submit);
         loginButton.setOnClickListener(new View.OnClickListener() {
@@ -87,6 +107,19 @@ public class LoginActivity extends Activity {
                     e.printStackTrace();
                 }
             }
+        });
+        loginButton.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+
+                // TODO Auto-generated method stub
+                if (hasFocus) {
+                    loginButton.setBackgroundColor(getResources().getColor(R.color.default_background));
+                } else {
+                    loginButton.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+                }
+            }
+
         });
 
     }
@@ -137,15 +170,16 @@ public class LoginActivity extends Activity {
                             handleUnknownError(response);
                             break;
                     }
+                    return response.message();
                 } catch (Exception e) {
-                    Log.e("onFailure", e.getMessage());
+                    Log.e("onFailure", e.getMessage() + "jjjjjjjjj");
+                    return "EXCEPTION";
                 }
-                return "";
+
             }
 
             private void handleUnknownError(Response r) {
                 Toast.makeText(getApplicationContext(), "Une erreur inconnue s'est produite ! " + " code erreur =B7-" + r.code(), Toast.LENGTH_LONG).show();
-
             }
 
             private void handleUnexpectedError(Response r) {
@@ -177,11 +211,21 @@ public class LoginActivity extends Activity {
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
                 pdLoading.dismiss();
+                if (s.equals("EXCEPTION")) {
+                    Toast.makeText(getApplicationContext(), "Erreur inattendue, désolé nous avons rencontré un problème ! " + " code erreur =B7-PSEX", Toast.LENGTH_SHORT).show();
+                    requestFocus();
+                }
+
             }
         };
 
         asyncTask.execute();
     }
 
+    public void requestFocus(){
+        code.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(code, InputMethodManager.SHOW_IMPLICIT);
+    }
 
 }
