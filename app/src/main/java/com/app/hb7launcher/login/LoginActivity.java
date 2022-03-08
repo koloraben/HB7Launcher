@@ -23,6 +23,8 @@ import android.widget.Toast;
 import com.app.hb7launcher.MainActivity;
 import com.app.hb7launcher.R;
 import com.app.hb7launcher.utils.ColorToast.*;
+import com.app.hb7launcher.utils.HttpStatusCodeRange;
+import com.app.hb7launcher.utils.HttpStatusCodeRangeUtil;
 import com.app.hb7launcher.utils.MyToast;
 import com.app.hb7launcher.utils.Utils;
 
@@ -59,7 +61,6 @@ public class LoginActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        checkInternet(getApplicationContext());
         setContentView(R.layout.activity_login);
         code = (EditText) findViewById(R.id.username);
         code.setOnKeyListener(new View.OnKeyListener() {
@@ -96,8 +97,7 @@ public class LoginActivity extends Activity {
 
     public void authenticate(String codeValidation) throws IOException {
         String url = getResources().getString(R.string.base_url) + "/api/validation/serial?code=" + codeValidation + "&serial=" + getSerialNumber() + "&macwlan0=" + Utils.getMACAddress("wlan0") + "&maceth0=" + Utils.getMACAddress("eth0");
-        String urlBoxValidation = getResources().getString(R.string.base_url) + "/api/validation/serial?idbox=" + getIdBox(getApplicationContext()) + "&code=" + codeValidation;
-        Log.e(TAG + " used url ", url);
+        Log.d(TAG + " used url ", url);
         final OkHttpClient client = new OkHttpClient();
 
         final Request request = new Request.Builder()
@@ -119,22 +119,58 @@ public class LoginActivity extends Activity {
             protected String doInBackground(Void... params) {
                 try {
                     Response response = client.newCall(request).execute();
-                    if (!response.isSuccessful()) {
-                        Log.e("onFailure", "fail::" + response.message());
-                        Toast.makeText(getApplicationContext(), "Désolé le code n'est pas bon!", Toast.LENGTH_SHORT).show();
-                        return null;
+                    HttpStatusCodeRange range = HttpStatusCodeRangeUtil.getRange(response.code());
+                    switch (range) {
+                        case SUCCESS_RANGE:
+                            handleSuccess();
+                            break;
+                        case CLIENT_ERROR_RANGE:
+                            handleClientError(response);
+                            break;
+                        case SERVER_ERROR_RANGE:
+                            handleServerError();
+                            break;
+                        case UNKNOWN:
+                            handleUnexpectedError(response);
+                            break;
+                        default:
+                            handleUnknownError(response);
+                            break;
                     }
-                    Toast.makeText(getApplicationContext(), "Bienvenu !", Toast.LENGTH_SHORT).show();
-                    LoginUtility.saveCode(getBaseContext(), codeValidation);
-                    LoginUtility.setUserLoggedIn(getBaseContext(), true);
-                    Intent intent = new Intent(getBaseContext(), MainActivity.class);
-                    startActivity(intent);
-                    return response.body().string();
                 } catch (Exception e) {
-                    Log.e("onFailure", "failllllll");
-                    e.printStackTrace();
-                    return null;
+                    Log.e("onFailure", e.getMessage());
                 }
+                return "";
+            }
+
+            private void handleUnknownError(Response r) {
+                Toast.makeText(getApplicationContext(), "Une erreur inconnue s'est produite ! " + " code erreur =B7-" + r.code(), Toast.LENGTH_LONG).show();
+
+            }
+
+            private void handleUnexpectedError(Response r) {
+                Toast.makeText(getApplicationContext(), "Erreur inattendue, désolé nous avons rencontré un problème ! " + " code erreur =B7-" + r.code(), Toast.LENGTH_SHORT).show();
+            }
+
+            private void handleServerError() {
+                Toast.makeText(getApplicationContext(), "Désolé nous rencontrons des problèmes de serveur temporaire !", Toast.LENGTH_LONG).show();
+            }
+
+            private void handleClientError(Response r) {
+                if (r.code() == 403) {
+                    Log.e("handleClientError", "errur d'authentification::" + r.message());
+                    Toast.makeText(getApplicationContext(), "Désolé le code n'est pas bon!", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Vérifier votre connexion internet puis réessayez !", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            private void handleSuccess() {
+                Toast.makeText(getApplicationContext(), "Bienvenu !", Toast.LENGTH_LONG).show();
+                LoginUtility.saveCode(getBaseContext(), codeValidation);
+                LoginUtility.setUserLoggedIn(getBaseContext(), true);
+                Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                startActivity(intent);
             }
 
             @Override
