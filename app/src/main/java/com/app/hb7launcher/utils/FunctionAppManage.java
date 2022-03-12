@@ -20,25 +20,32 @@ public class FunctionAppManage {
 
         FunctionModel networkSettings = new FunctionModel();
         networkSettings.setName("Connectivité");
-        networkSettings.setIcon(R.drawable.ic_settings_ethernet_active);
+        networkSettings.setIcon(R.drawable.ethernet);
         networkSettings.setClassName("com.android.tv.settings.connectivity.NetworkActivity");
         networkSettings.setPck("com.android.tv.settings");
         functionModels.add(networkSettings);
         ////////////////////////////////////////////////////
-        FunctionModel settings = new FunctionModel();
-        settings.setName("Settings");
-        settings.setIcon(R.drawable.ic_settings_settings);
-        //settings.setClassName("com.android.tv.settings.Settings");
-        settings.setPck("com.android.tv.settings");
-        functionModels.add(settings);
+//        FunctionModel settings = new FunctionModel();
+//        settings.setName("Settings");
+//        settings.setIcon(R.drawable.ic_settings_settings);
+//        //settings.setClassName("com.android.tv.settings.Settings");
+//        settings.setPck("com.android.tv.settings");
+//        functionModels.add(settings);
         //////////////////////////////////////////////////
-        FunctionModel settingsBluetooth = new FunctionModel();
-        settingsBluetooth.setName("Bluetooth");
-        settingsBluetooth.setIcon(R.drawable.ic_settings_settings);
-        settingsBluetooth.setClassName("com.android.tv.settings.bluetoothSettings");
-        settingsBluetooth.setPck("com.android.tv.settings");
-        functionModels.add(settingsBluetooth);
+        FunctionModel settingsLangue = new FunctionModel();
+        settingsLangue.setName("Langue");
+        settingsLangue.setIcon(R.drawable.langue);
+        settingsLangue.setClassName("com.android.tv.settings.system.LanguageActivity");
+        settingsLangue.setPck("com.android.tv.settings");
+        functionModels.add(settingsLangue);
 
+
+        FunctionModel settingsDateTime = new FunctionModel();
+        settingsDateTime.setName("Date et heure");
+        settingsDateTime.setIcon(R.drawable.time);
+        settingsDateTime.setClassName("com.android.tv.settings.system.DateTimeActivity");
+        settingsDateTime.setPck("com.android.tv.settings");
+        functionModels.add(settingsDateTime);
         return functionModels;
     }
 }

@@ -177,8 +177,8 @@ public class AppDataManage {
         if (arraylistPackage == null || arraylistPackage.size() < 19) {
             arraylistPackage = new ArrayList<>();
 
-            //arraylistPackage.add("com.bee.software.filebrowser.beefilesexplorer");
-            arraylistPackage.add("com.droidlogic.FileBrower");
+            arraylistPackage.add("com.bee.software.filebrowser.beefilesexplorer");
+            //arraylistPackage.add("com.droidlogic.FileBrower");
             arraylistPackage.add("com.droidlogic.videoplayer");
             arraylistPackage.add("com.google.android.youtube.tv");
 
@@ -192,7 +192,7 @@ public class AppDataManage {
             arraylistPackage.add("io.makeroid.sarl_alzeto.radio");
             arraylistPackage.add("com.facebook.katana");
             arraylistPackage.add("com.skype.raider");
-            arraylistPackage.add("com.twitter.android");
+            arraylistPackage.add("com.pulse.tvtweet");
             arraylistPackage.add("com.netflix.mediaclient");
             arraylistPackage.add("wetv.android.telez");
             arraylistPackage.add("fr.tfou.max");

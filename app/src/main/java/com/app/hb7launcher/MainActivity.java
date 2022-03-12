@@ -3,34 +3,25 @@ package com.app.hb7launcher;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
-import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.app.hb7launcher.login.LoginActivity;
 import com.app.hb7launcher.login.LoginUtility;
+import com.app.hb7launcher.model.FunctionModel;
 import com.app.hb7launcher.utils.Utils;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 
-import okhttp3.Call;
-import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-
-import static com.app.hb7launcher.login.LoginUtility.getIdBox;
 
 public class MainActivity extends Activity {
 
@@ -39,7 +30,6 @@ public class MainActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         if (Settings.Secure.getString(getContentResolver(), "default_input_method").equals("")) {
             startActivity(new Intent("android.settings.INPUT_METHOD_SETTINGS"));
             for (int i = 0; i < 4; i++) {
@@ -60,8 +50,9 @@ public class MainActivity extends Activity {
                         e.printStackTrace();
                     }
                 }
+                setContentView(R.layout.main_activity);
             }
-            setContentView(R.layout.main_activity);
+
         }
 
     }
@@ -79,20 +70,6 @@ public class MainActivity extends Activity {
             startActivity(new Intent("android.settings.INPUT_METHOD_SETTINGS"));
             for (int i = 0; i < 4; i++) {
                 Toast.makeText(this, "Merci d'activer le clavier !", Toast.LENGTH_LONG).show();
-            }
-        } else {
-            String code = LoginUtility.getCode(getBaseContext());
-
-            if (!LoginUtility.isUserLoggedIn(this) && code == null) {
-                startActivity(new Intent(this, LoginActivity.class));
-            } else {
-                if (code != null) {
-                    try {
-                        authenticate(code);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
             }
         }
 
@@ -127,21 +104,27 @@ public class MainActivity extends Activity {
             }
 
             @Override
+            protected void onCancelled() {
+                Toast.makeText(getApplicationContext(), "Vous n'êtes pas autorisé à accéder !", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
             protected String doInBackground(Void... params) {
                 try {
                     Response response = client.newCall(request).execute();
-                    if (!response.isSuccessful()) {
+                    if (response.code() == 404 || response.code() == 401 || response.code() == 403) {
                         LoginUtility.setUserLoggedIn(getBaseContext(), false);
                         Intent intent = new Intent(getBaseContext(), LoginActivity.class);
                         startActivity(intent);
                         Log.e("onFailure", "fail");
-                        Toast.makeText(getApplicationContext(), "Désolé le code n'est pas bon!", Toast.LENGTH_SHORT).show();
+                        cancel(true);
                         return null;
-                    }else{
-
+                    } else {
+                        Log.e("onFailure", "cccccccccccccc " + response.code());
                     }
                     return response.body().string();
                 } catch (Exception e) {
+                    Log.e("onFailure", "fffffffffffffffffff");
                     e.printStackTrace();
                     return null;
                 }

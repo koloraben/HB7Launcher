@@ -1,13 +1,10 @@
 package com.app.hb7launcher;
 
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.annotation.RequiresApi;
 import android.support.v17.leanback.app.VerticalGridFragment;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
@@ -43,8 +40,6 @@ public class MainFragment extends VerticalGridFragment {
         super.onCreate(savedInstanceState);
         setupRowAdapter();
         setupEventListeners();
-
-
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -122,8 +117,7 @@ public class MainFragment extends VerticalGridFragment {
                         Intent i = new Intent(Intent.ACTION_MAIN);
 
                         i.addCategory(Intent.CATEGORY_LAUNCHER);
-                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
-                                Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         i.setComponent(name);
 
                         startActivity(i);

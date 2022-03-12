@@ -12,22 +12,31 @@ import android.widget.Toast;
 import com.app.hb7launcher.MainActivity;
 import com.app.hb7launcher.model.AppModel;
 
+import java.util.ArrayList;
+
 public class InstallerReceiver extends BroadcastReceiver {
+    ArrayList<String> arraylistForbidenPackage = new ArrayList<String>() {
+        {
+            add("com.android.vending");
+        }
+    };
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onReceive(Context context, Intent intent) {
         // when package removed
         if (intent.getAction().equals("android.intent.action.PACKAGE_ADDED")) {
+            if(!arraylistForbidenPackage.contains(intent.getData().getSchemeSpecificPart()))
             addApp(context, intent);
         }
         // when package installed
         if (intent.getAction().equals("android.intent.action.PACKAGE_REMOVED")) {
             removeApp(context, intent);
         }
-        if(intent.getAction().equalsIgnoreCase("android.net.conn.CONNECTIVITY_CHANGE")) {
+        if (intent.getAction().equalsIgnoreCase("android.net.conn.CONNECTIVITY_CHANGE")) {
             Log.e("BroadcastReceiver ", "connexion "
                     + " connexion ");
-                MyToast.createNotif(context,checkInternet(context),ColorToast.GREEN);
+            MyToast.createNotif(context, checkInternet(context), ColorToast.GREEN);
         }
     }
 

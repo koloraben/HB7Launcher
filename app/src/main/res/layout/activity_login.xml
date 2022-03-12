@@ -27,8 +27,33 @@
 
     <LinearLayout
         android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/maceth0"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_margin="8dp"
+            android:text="ETHERNET MAC: 2C:54:91:88:C9:E3"
+            android:textColor="@color/lb_default_brand_color_dark">
+
+        </TextView>
+        <TextView
+            android:id="@+id/macwlan0"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_margin="8dp"
+            android:text="WIFI MAC: 2C:54:91:88:C9:E3"
+            android:textColor="@color/lb_default_brand_color_dark">
+
+        </TextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="25dp"
         android:gravity="center_horizontal"
         android:orientation="horizontal">
 
@@ -57,6 +82,8 @@
             android:background="@color/colorAccent"
             android:text="Login"
             android:textAllCaps="false" />
+
+
     </LinearLayout>
 
 
